@@ -1,7 +1,8 @@
 -- liquibase formatted sql
 
--- changeset andrew:1
+-- changeset andrew:2
 CREATE TABLE shelters (
     id SERIAL,
-    name TEXT
+    name TEXT,
+    info TEXT
 )
