@@ -11,6 +11,7 @@ public class ShelterEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    private String info;
 
     @Override
     public boolean equals(Object o) {
@@ -38,5 +39,13 @@ public class ShelterEntity {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
     }
 }
