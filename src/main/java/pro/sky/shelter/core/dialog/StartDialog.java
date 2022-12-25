@@ -1,7 +1,7 @@
-package pro.sky.shelter.scheduler.dialog;
+package pro.sky.shelter.core.dialog;
 
 import org.springframework.stereotype.Component;
-import pro.sky.shelter.scheduler.dto.DialogDto;
+import pro.sky.shelter.core.dto.DialogDto;
 
 import static pro.sky.shelter.configuration.BotConstants.GREETING_MSG;
 import static pro.sky.shelter.configuration.BotConstants.INITIAL_MSG;

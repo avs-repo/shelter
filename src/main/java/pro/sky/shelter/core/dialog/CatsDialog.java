@@ -1,15 +1,15 @@
-package pro.sky.shelter.scheduler.dialog;
+package pro.sky.shelter.core.dialog;
 
 import org.springframework.stereotype.Component;
-import pro.sky.shelter.scheduler.dto.DialogDto;
+import pro.sky.shelter.core.dto.DialogDto;
 
 import static pro.sky.shelter.configuration.BotConstants.*;
 
 @Component
-public class DogsDialog implements DialogInterface {
+public class CatsDialog implements DialogInterface {
     @Override
     public boolean isSupport(DialogDto dialogDto) {
-        return dialogDto.message().equals(DOGS_MSG);
+        return dialogDto.message().equals(CATS_MSG);
     }
 
     @Override
@@ -19,6 +19,6 @@ public class DogsDialog implements DialogInterface {
 
     @Override
     public String getMessage() {
-        return DOGS_INFO_MSG;
+        return CATS_INFO_MSG;
     }
 }

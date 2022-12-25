@@ -13,6 +13,11 @@ import pro.sky.shelter.service.BotService;
 
 import java.util.List;
 
+/**
+ * Class-service for TelegramBot listener
+ *
+ * @autor Shikunov Andrey
+ */
 @Service
 public class BotListener implements UpdatesListener {
 

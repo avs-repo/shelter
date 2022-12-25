@@ -1,16 +1,30 @@
-package pro.sky.shelter.scheduler.entity;
+package pro.sky.shelter.core.entity;
 
 import jakarta.persistence.*;
 
 import java.util.Objects;
 
+/**
+ * PostgresSQL data base Entity
+ *
+ * @autor Shikunov Andrey
+ */
 @Entity
 @Table(name = "shelters")
 public class ShelterEntity {
+    /**
+     * Generated unique ID
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    /**
+     * Shelter name
+     */
     private String name;
+    /**
+     * Information about shelter
+     */
     private String info;
 
     @Override
