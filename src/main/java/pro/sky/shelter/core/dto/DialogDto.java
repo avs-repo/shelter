@@ -1,7 +1,12 @@
-package pro.sky.shelter.scheduler.dto;
+package pro.sky.shelter.core.dto;
 
 import java.util.Objects;
 
+/**
+ * Data transfer object record
+ *
+ * @autor Shikunov Andrey
+ */
 public record DialogDto(Long chatId, String message) {
 
     @Override
@@ -10,5 +15,4 @@ public record DialogDto(Long chatId, String message) {
         if (!(o instanceof DialogDto dialogDto)) return false;
         return Objects.equals(chatId, dialogDto.chatId) && Objects.equals(message, dialogDto.message);
     }
-
 }
