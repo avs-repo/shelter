@@ -23,9 +23,13 @@ public class ShelterEntity {
      */
     private String name;
     /**
-     * Information about shelter
+     * Shelters address
      */
-    private String info;
+    private String address;
+    /**
+     * Shelters opening hours
+     */
+    private String openingHours;
 
     @Override
     public boolean equals(Object o) {
@@ -55,11 +59,19 @@ public class ShelterEntity {
         this.id = id;
     }
 
-    public String getInfo() {
-        return info;
+    public String getAddress() {
+        return address;
     }
 
-    public void setInfo(String info) {
-        this.info = info;
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getOpeningHours() {
+        return openingHours;
+    }
+
+    public void setOpeningHours(String openingHours) {
+        this.openingHours = openingHours;
     }
 }
