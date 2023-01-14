@@ -3,7 +3,11 @@ package pro.sky.shelter.service;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.model.request.*;
 import com.pengrad.telegrambot.request.SendMessage;
+import com.pengrad.telegrambot.response.SendResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import pro.sky.shelter.core.dialog.DialogInterface;
@@ -24,6 +28,8 @@ public class BotService {
      * TelegramBot instance that this BotService is responsible for
      */
     private final TelegramBot telegramBot;
+
+    private final Logger logger = LoggerFactory.getLogger(BotService.class);
 
     /**
      * Map of supported dialogs
@@ -48,14 +54,14 @@ public class BotService {
                     return;
                 }
                 Message incomeMessage = update.message();
-                DialogDto dto = new DialogDto(incomeMessage.chat().id(), incomeMessage.text());
+                DialogDto dto = new DialogDto(incomeMessage.chat().id(), update.message().from().firstName(), incomeMessage.text());
                 if (dialog.isSupport(dto) && dialog.process(dto)) {
-                    sendResponse(dto.chatId(), dialog.getMessage());
+                    sendResponse(dto.chatId(), dialog.getMessage(), dialog.getButtons());
                     return;
                 }
             }
         } catch (IntervalDateIncorrectException exception) {
-            sendResponse(update.message().chat().id(), exception.getMessage());
+            sendResponse(update.message().chat().id(), exception.getMessage(), null);
         }
     }
 
@@ -64,8 +70,26 @@ public class BotService {
      * <p>
      * Executes the message send to user.
      */
-    public void sendResponse(Long chatId, String message) {
+    public void sendResponse(Long chatId, String message, KeyboardButton[] buttons) {
         SendMessage preparedMessage = new SendMessage(chatId, message);
-        telegramBot.execute(preparedMessage);
+        if (buttons != null) preparedMessage.replyMarkup(initKeyboard(buttons));
+        SendResponse response = telegramBot.execute(preparedMessage);
+        if (response == null) {
+            logger.debug("ChatId={}; Method sendMessage did not receive a response", chatId);
+        } else if (response.isOk()) {
+            logger.debug("ChatId={}; Method sendMessage has completed sending the message", chatId);
+        } else {
+            logger.debug("ChatId={}; Method sendMessage received an error : {}", chatId, response.errorCode());
+        }
+    }
+
+    private ReplyKeyboardMarkup initKeyboard(KeyboardButton[] buttons) {
+        //Создаем объект будущей клавиатуры и выставляем нужные настройки
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup(buttons);
+        keyboardMarkup.resizeKeyboard(true); //подгоняем размер
+        keyboardMarkup.oneTimeKeyboard(true); //скрываем после использования
+
+        //добавляем лист кнопок в главный объект
+        return keyboardMarkup;
     }
 }

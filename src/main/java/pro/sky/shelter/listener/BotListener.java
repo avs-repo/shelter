@@ -35,7 +35,7 @@ public class BotListener implements UpdatesListener {
     @Override
     public int process(List<Update> updates) {
         updates.forEach(update -> {
-            logger.info("Обновление: {}", update);
+            logger.info("Обновление: {}", "name:" + update.message().from().firstName() + " id:" + update.message().from().id() + " msg:" + update.message().from().toString());
             botService.process(update);
         });
         return UpdatesListener.CONFIRMED_UPDATES_ALL;

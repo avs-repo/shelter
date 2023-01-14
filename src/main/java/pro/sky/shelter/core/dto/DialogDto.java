@@ -7,7 +7,7 @@ import java.util.Objects;
  *
  * @autor Shikunov Andrey
  */
-public record DialogDto(Long chatId, String message) {
+public record DialogDto(Long chatId, String name, String message) {
 
     @Override
     public boolean equals(Object o) {

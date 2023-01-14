@@ -16,7 +16,7 @@ public class UserEntity {
      */
     private String userName;
     /**
-     * Users chad ID
+     * Users chat ID
      */
     private Long chatId;
     /**
