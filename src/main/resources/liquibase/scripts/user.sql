@@ -1,9 +1,9 @@
 -- liquibase formatted sql
 
--- changeset andrew:1
+-- changeset andrew:5
 CREATE TABLE users (
     id SERIAL,
-    name TEXT,
-    chatId int8,
+    user_name TEXT,
+    chat_id int8 UNIQUE,
     phone TEXT
 )

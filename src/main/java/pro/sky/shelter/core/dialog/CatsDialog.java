@@ -1,9 +1,11 @@
 package pro.sky.shelter.core.dialog;
 
+import com.pengrad.telegrambot.model.request.KeyboardButton;
 import org.springframework.stereotype.Component;
 import pro.sky.shelter.core.dto.DialogDto;
 
 import static pro.sky.shelter.configuration.BotConstants.*;
+
 /**
  * /cat shelter dialog
  *
@@ -13,13 +15,14 @@ import static pro.sky.shelter.configuration.BotConstants.*;
 public class CatsDialog implements DialogInterface {
     @Override
     public boolean isSupport(DialogDto dialogDto) {
-        return dialogDto.message().equals(CATS_MSG);
+        return dialogDto.message().equals(CATS_CMD);
     }
 
     @Override
     public boolean process(DialogDto dialogDto) {
         return true;
     }
+
     /**
      * /cat shelter information message
      *
@@ -28,5 +31,10 @@ public class CatsDialog implements DialogInterface {
     @Override
     public String getMessage() {
         return CATS_INFO_MSG;
+    }
+
+    @Override
+    public KeyboardButton[] getButtons() {
+        return new KeyboardButton[]{new KeyboardButton(DOGS_CMD)};
     }
 }

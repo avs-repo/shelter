@@ -6,4 +6,5 @@ import pro.sky.shelter.core.entity.UserEntity;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
+    UserEntity getUserEntityByChatId(Long chatId);
 }
