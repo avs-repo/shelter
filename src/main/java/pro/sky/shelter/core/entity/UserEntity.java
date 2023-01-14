@@ -1,8 +1,14 @@
 package pro.sky.shelter.core.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
 
 @Entity
+@Setter
+@Getter
 @Table(name = "users")
 public class UserEntity {
     /**
@@ -24,35 +30,16 @@ public class UserEntity {
      */
     private String phone;
 
-    public Long getId() {
-        return id;
-    }
+    /**
+     * Поле для связи с таблицей AnimalEntity
+     */
+    @OneToOne
+    private AnimalEntity animalEntity;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    /**
+     * Поле для связи с таблицей ReportEntity
+     */
+    @OneToMany
+    private List<ReportEntity> reportEntity;
 
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public Long getChatId() {
-        return chatId;
-    }
-
-    public void setChatId(Long chatId) {
-        this.chatId = chatId;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
 }
