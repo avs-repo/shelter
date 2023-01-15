@@ -3,14 +3,13 @@ package pro.sky.shelter.core.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.service.spi.InjectService;
 
 @Entity
 
 @Getter
 @Setter
 
-@Table(name = "animalPhoto")
+@Table(name = "animal_photo")
 public class AnimalPhotoEntity {
 
     /**
@@ -23,20 +22,24 @@ public class AnimalPhotoEntity {
     /**
      * Поле путь к файлу
      */
+    @Column(name = "file_path")
     private String filePath;
 
     /**
      * Поле размер файла
      */
+    @Column(name = "file_size")
     private long fileSize;
 
     /**
      * Поле тип файла
      */
+    @Column(name = "media_type")
     private String mediaType;
 
     /**
      * Поле информация о файле
      */
+    @Column(name = "data")
     private byte[] data;
 }

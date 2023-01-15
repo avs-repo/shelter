@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import pro.sky.shelter.core.dto.DialogDto;
 
 import static pro.sky.shelter.configuration.BotConstants.*;
+
 /**
  * /dog shelter dialog
  *
@@ -21,6 +22,7 @@ public class DogsDialog implements DialogInterface {
     public boolean process(DialogDto dialogDto) {
         return true;
     }
+
     /**
      * /dog shelter information message
      *

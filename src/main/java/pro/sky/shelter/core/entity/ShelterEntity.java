@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Objects;
-
 /**
  * PostgresSQL data base Entity
  *
@@ -26,14 +24,17 @@ public class ShelterEntity {
     /**
      * Shelter name
      */
+    @Column(name = "name")
     private String name;
     /**
      * Shelters address
      */
+    @Column(name = "address")
     private String address;
     /**
      * Shelters opening hours
      */
+    @Column(name = "opening_hours")
     private String openingHours;
 
 }

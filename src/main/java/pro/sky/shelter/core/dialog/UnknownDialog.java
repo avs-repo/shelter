@@ -27,6 +27,6 @@ public class UnknownDialog implements DialogInterface {
 
     @Override
     public KeyboardButton[] getButtons() {
-        return new KeyboardButton[] {new KeyboardButton(GREETING_MSG)};
+        return new KeyboardButton[]{new KeyboardButton(GREETING_MSG)};
     }
 }
