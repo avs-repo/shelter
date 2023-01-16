@@ -18,6 +18,8 @@ import static pro.sky.shelter.configuration.BotConstants.DOGS_CMD;
 public class StartDialog implements DialogInterface {
 
     private final UserRepository repository;
+    private boolean isNewDialog = false;
+    private UserEntity entity;
 
     public StartDialog(UserRepository repository) {
         this.repository = repository;
@@ -30,10 +32,8 @@ public class StartDialog implements DialogInterface {
 
     @Override
     public boolean process(DialogDto dialogDto) {
-        UserEntity entity = getEntity(dialogDto);
-
+        entity = getEntity(dialogDto);
         repository.save(entity);
-
         return true;
     }
 
@@ -41,6 +41,7 @@ public class StartDialog implements DialogInterface {
         UserEntity userEntity = repository.getUserEntityByChatId(dialogDto.chatId());
         if (userEntity == null) {
             userEntity = new UserEntity();
+            isNewDialog = true;
 
             userEntity.setChatId(dialogDto.chatId());
             userEntity.setUserName(dialogDto.name());
@@ -55,7 +56,11 @@ public class StartDialog implements DialogInterface {
      */
     @Override
     public String getMessage() {
-        return GREETING_MSG;
+        if (isNewDialog) {
+            return GREETING_MSG;
+        } else {
+            return "Здравствуйте " + entity.getUserName() + ".\nЧем можем помочь?";
+        }
     }
 
     @Override
