@@ -35,6 +35,6 @@ public class DogsDialog implements DialogInterface {
 
     @Override
     public KeyboardButton[] getButtons() {
-        return new KeyboardButton[]{new KeyboardButton(CATS_CMD)};
+        return KEYBOARD_ALL_BUTTONS;
     }
 }

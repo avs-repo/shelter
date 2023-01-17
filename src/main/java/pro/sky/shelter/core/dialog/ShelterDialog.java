@@ -35,7 +35,7 @@ public class ShelterDialog implements DialogInterface {
 
     @Override
     public KeyboardButton[] getButtons() {
-        return new KeyboardButton[]{new KeyboardButton(CATS_CMD), new KeyboardButton(DOGS_CMD)};
+        return KEYBOARD_ALL_BUTTONS;
     }
 
 

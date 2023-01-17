@@ -6,16 +6,11 @@ import pro.sky.shelter.core.dto.DialogDto;
 
 import static pro.sky.shelter.configuration.BotConstants.*;
 
-/**
- * /cat shelter dialog
- *
- * @autor Shikunov Andrey
- */
 @Component
-public class CatsDialog implements DialogInterface {
+public class SafetyDialog implements DialogInterface {
     @Override
     public boolean isSupport(DialogDto dialogDto) {
-        return dialogDto.message().equals(CATS_CMD);
+        return dialogDto.message().equals(SAFETY_CMD);
     }
 
     @Override
@@ -24,13 +19,13 @@ public class CatsDialog implements DialogInterface {
     }
 
     /**
-     * /cat shelter information message
+     * Safety information message
      *
-     * @return Cat shelter message as String
+     * @return Shelter's safety rules message as String
      */
     @Override
     public String getMessage() {
-        return CATS_INFO_MSG;
+        return SAFETY_MSG;
     }
 
     @Override

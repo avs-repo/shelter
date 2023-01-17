@@ -3,8 +3,11 @@ package pro.sky.shelter.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import pro.sky.shelter.core.dto.UserDto;
 import pro.sky.shelter.core.entity.UserEntity;
 import pro.sky.shelter.core.repository.UserRepository;
+
+import java.util.Collection;
 
 @Service
 public class UserService {
@@ -51,5 +54,21 @@ public class UserService {
 
     public void deleteUser(UserEntity user) {
         userRepository.delete(user);
+    }
+
+    public UserDto createUser(UserDto userDto) {
+        return null;
+    }
+
+    public Collection<UserDto> getAll() {
+        return null;
+    }
+
+    public UserDto updateUser(UserDto userDto) {
+        return null;
+    }
+
+    public UserDto readUser(Long id) {
+        return null;
     }
 }
