@@ -49,6 +49,11 @@
 			<artifactId>javadocking</artifactId>
 			<version>1.7.1</version>
 		</dependency>
+		<dependency>
+			<groupId>cn.fxbin.swagger</groupId>
+			<artifactId>swagger-spring-boot-starter</artifactId>
+			<version>1.4</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>

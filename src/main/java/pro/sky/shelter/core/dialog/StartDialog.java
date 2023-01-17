@@ -7,7 +7,6 @@ import pro.sky.shelter.core.entity.UserEntity;
 import pro.sky.shelter.core.repository.UserRepository;
 
 import static pro.sky.shelter.configuration.BotConstants.*;
-import static pro.sky.shelter.configuration.BotConstants.DOGS_CMD;
 
 /**
  * Initiation - /start dialog
@@ -52,7 +51,7 @@ public class StartDialog implements DialogInterface {
     /**
      * /start - welcome information message
      *
-     * @return Dog shelter message as String
+     * @return Welcome message as String
      */
     @Override
     public String getMessage() {
@@ -65,6 +64,6 @@ public class StartDialog implements DialogInterface {
 
     @Override
     public KeyboardButton[] getButtons() {
-        return new KeyboardButton[]{new KeyboardButton(SHELTER_INFO_CMD), new KeyboardButton(CATS_CMD), new KeyboardButton(DOGS_CMD)};
+        return KEYBOARD_ALL_BUTTONS;
     }
 }
