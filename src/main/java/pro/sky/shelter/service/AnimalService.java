@@ -38,7 +38,7 @@ public class AnimalService {
     /**
      * Метод находит всех животных в БД
      *
-     * @return возвращает список животных
+     * @return возвращает животных
      */
     public Collection<AnimalRecord> getAllAnimal() {
         logger.info("Вызов метода getAllAnimals");

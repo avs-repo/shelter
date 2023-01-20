@@ -34,7 +34,7 @@ public class BotService {
      */
     private final TelegramBot telegramBot;
 
-    private final String parsePhone = "([+][7]-\\d{3}-\\d{3}-\\d{4})(\\s)([\\W+]+)";
+    private final String parsePhone = "([+][7]-\\d{3}-\\d{3}-\\d{2}-\\d{2})(\\s)([\\W+]+)";
     private final UserRepository userRepository;
     private final AnimalService animalService;
     private final Logger logger = LoggerFactory.getLogger(BotService.class);
@@ -108,14 +108,7 @@ public class BotService {
     public void sendResponse(Long chatId, String message, boolean enableKeyboard) {
         SendMessage preparedMessage = new SendMessage(chatId, message);
         if (enableKeyboard) preparedMessage.replyMarkup(KEYBOARD_FOR_USER);
-        SendResponse response = telegramBot.execute(preparedMessage);
-        if (response == null) {
-            logger.debug("ChatId={}; Method sendMessage did not receive a response", chatId);
-        } else if (response.isOk()) {
-            logger.debug("ChatId={}; Method sendMessage has completed sending the message", chatId);
-        } else {
-            logger.debug("ChatId={}; Method sendMessage received an error : {}", chatId, response.errorCode());
-        }
+        telegramBot.execute(preparedMessage);
     }
 
     public void parsing(String text, Long chatId) {

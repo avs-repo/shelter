@@ -5,9 +5,7 @@ import org.springframework.stereotype.Repository;
 import pro.sky.shelter.core.entity.ShelterEntity;
 
 /**
- * Shelters repository
- *
- * @autor Shikunov Andrey
+ * Репозиторий хранения информации о приютах
  */
 @Repository
 public interface SheltersRepository extends JpaRepository<ShelterEntity, Long> {

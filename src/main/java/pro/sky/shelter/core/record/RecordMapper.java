@@ -6,6 +6,9 @@ import pro.sky.shelter.core.entity.AnimalPhotoEntity;
 import pro.sky.shelter.core.entity.ReportEntity;
 import pro.sky.shelter.core.entity.UserEntity;
 
+/**
+ * Класс конвертации из Entity в Record и обратно
+ */
 @Component
 public class RecordMapper {
     public UserRecord toRecord(UserEntity userEntity) {
