@@ -1,6 +1,5 @@
 package pro.sky.shelter.core.dialog;
 
-import com.pengrad.telegrambot.model.request.KeyboardButton;
 import pro.sky.shelter.core.dto.DialogDto;
 
 /**
@@ -29,7 +28,5 @@ public interface DialogInterface {
      *
      * @return Message as String
      */
-    String getMessage();
-
-    KeyboardButton[] getButtons();
+    String getMessage(Long chatId);
 }

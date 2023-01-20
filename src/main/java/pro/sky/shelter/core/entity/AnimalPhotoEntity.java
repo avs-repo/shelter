@@ -4,11 +4,12 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity
+import java.util.Arrays;
+import java.util.Objects;
 
+@Entity
 @Getter
 @Setter
-
 @Table(name = "animal_photo")
 public class AnimalPhotoEntity {
 
@@ -42,4 +43,18 @@ public class AnimalPhotoEntity {
      */
     @Column(name = "data")
     private byte[] data;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AnimalPhotoEntity that)) return false;
+        return fileSize == that.fileSize && Objects.equals(id, that.id) && Objects.equals(filePath, that.filePath) && Objects.equals(mediaType, that.mediaType) && Arrays.equals(data, that.data);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(id, filePath, fileSize, mediaType);
+        result = 31 * result + Arrays.hashCode(data);
+        return result;
+    }
 }

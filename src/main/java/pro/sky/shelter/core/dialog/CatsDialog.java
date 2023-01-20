@@ -1,6 +1,5 @@
 package pro.sky.shelter.core.dialog;
 
-import com.pengrad.telegrambot.model.request.KeyboardButton;
 import org.springframework.stereotype.Component;
 import pro.sky.shelter.core.dto.DialogDto;
 
@@ -29,12 +28,7 @@ public class CatsDialog implements DialogInterface {
      * @return Cat shelter message as String
      */
     @Override
-    public String getMessage() {
+    public String getMessage(Long chatId) {
         return CATS_INFO_MSG;
-    }
-
-    @Override
-    public KeyboardButton[] getButtons() {
-        return KEYBOARD_ALL_BUTTONS;
     }
 }

@@ -3,7 +3,6 @@ package pro.sky.shelter.service;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.model.request.*;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.SendResponse;
 import org.slf4j.Logger;
@@ -12,13 +11,18 @@ import org.springframework.stereotype.Service;
 
 import pro.sky.shelter.core.dialog.DialogInterface;
 import pro.sky.shelter.core.dto.DialogDto;
-import pro.sky.shelter.core.exception.IntervalDateIncorrectException;
+import pro.sky.shelter.core.entity.UserEntity;
+import pro.sky.shelter.core.repository.UserRepository;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static pro.sky.shelter.configuration.BotConstants.KEYBOARD_FOR_USER;
 
 /**
- * Class-service for TelegramBot
+ * Main service for TelegramBot
  *
  * @autor Shikunov Andrey
  */
@@ -30,7 +34,9 @@ public class BotService {
      */
     private final TelegramBot telegramBot;
 
-
+    private final String parsePhone = "([+][7]-\\d{3}-\\d{3}-\\d{4})(\\s)([\\W+]+)";
+    private final UserRepository userRepository;
+    private final AnimalService animalService;
     private final Logger logger = LoggerFactory.getLogger(BotService.class);
 
     /**
@@ -39,8 +45,10 @@ public class BotService {
     private final Map<String, DialogInterface> supportedDialogs;
     private final ContentSaverService contentSaverService;
 
-    public BotService(TelegramBot bot, Map<String, DialogInterface> supportedDialogs, ContentSaverService contentSaverService) {
+    public BotService(TelegramBot bot, UserRepository userRepository, AnimalService animalService, Map<String, DialogInterface> supportedDialogs, ContentSaverService contentSaverService) {
         this.telegramBot = bot;
+        this.userRepository = userRepository;
+        this.animalService = animalService;
         this.supportedDialogs = supportedDialogs;
         this.contentSaverService = contentSaverService;
     }
@@ -53,52 +61,53 @@ public class BotService {
      * Chooses needed dialog and sending response to user.
      */
     public void process(Update update) {
-        if (update == null) {
-            logger.debug("Method processUpdate detected null update");
+        if (update == null || update.message().document() != null) {
+            logger.debug("Method processUpdate detected document or null update");
             return;
         }
-        try {
-            for (DialogInterface dialog : supportedDialogs.values()) {
-                Message incomeMessage = update.message();
-                if (update.message() == null) {
-                    logger.debug("ChatId={}; Detected null message in update", incomeMessage.chat().id());
+        for (DialogInterface dialog : supportedDialogs.values()) {
+            Message incomeMessage = update.message();
+            if (update.message() == null) {
+                logger.debug("ChatId={}; Detected null message in update", incomeMessage.chat().id());
+                return;
+            }
+            if (incomeMessage.photo() != null) {
+                int maxPhotoIndex = update.message().photo().length - 1;
+                if (update.message().photo()[maxPhotoIndex].fileId() != null) {
+                    try {
+                        contentSaverService.savePhoto(update);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    return;
+                } else {
+                    logger.debug("ChatId={}; Detected null fileId in photo", incomeMessage.chat().id());
+                }
+            } else if (incomeMessage.text() != null) {
+                if (incomeMessage.text().matches(parsePhone)) {
+                    logger.info("ChatId={}; Parsing phone number", incomeMessage.chat().id());
+                    parsing(incomeMessage.text(), incomeMessage.chat().id());
                     return;
                 }
-                if (incomeMessage.photo() != null) {
-                    int maxPhotoIndex = update.message().photo().length - 1;
-                    if (update.message().photo()[maxPhotoIndex].fileId() != null) {
-                        try {
-                            contentSaverService.savePhoto(update);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                        return;
-                    } else {
-                        logger.debug("ChatId={}; Detected null fileId in photo", incomeMessage.chat().id());
-                    }
-                } else if (incomeMessage.text() != null) {
-                    DialogDto dto = new DialogDto(incomeMessage.chat().id(), update.message().from().firstName(), incomeMessage.text());
-                    if (dialog.isSupport(dto) && dialog.process(dto)) {
-                        sendResponse(dto.chatId(), dialog.getMessage(), dialog.getButtons());
-                        return;
-                    } else {
-                        logger.debug("ChatId={}; Detected null text in message", incomeMessage.chat().id());
-                    }
+                DialogDto dto = new DialogDto(incomeMessage.chat().id(), update.message().from().firstName(), incomeMessage.text());
+                if (dialog.isSupport(dto) && dialog.process(dto)) {
+                    sendResponse(dto.chatId(), dialog.getMessage(dto.chatId()), true);
+                    return;
+                } else {
+                    logger.debug("ChatId={}; Detected null text in message", incomeMessage.chat().id());
                 }
             }
-        } catch (IntervalDateIncorrectException exception) {
-            sendResponse(update.message().chat().id(), exception.getMessage(), null);
         }
     }
 
     /**
-     * Gets the Telegram chatId and incoming message
+     * Gets the Telegram chatId, incoming message и enable keyboard
      * <p>
      * Executes the message send to user.
      */
-    public void sendResponse(Long chatId, String message, KeyboardButton[] buttons) {
+    public void sendResponse(Long chatId, String message, boolean enableKeyboard) {
         SendMessage preparedMessage = new SendMessage(chatId, message);
-        if (buttons != null) preparedMessage.replyMarkup(initKeyboard(buttons));
+        if (enableKeyboard) preparedMessage.replyMarkup(KEYBOARD_FOR_USER);
         SendResponse response = telegramBot.execute(preparedMessage);
         if (response == null) {
             logger.debug("ChatId={}; Method sendMessage did not receive a response", chatId);
@@ -109,16 +118,22 @@ public class BotService {
         }
     }
 
-    /**
-     * Gets the needed buttons for dialog and implements keyboard to response
-     */
-    private ReplyKeyboardMarkup initKeyboard(KeyboardButton[] buttons) {
-        //Создаем объект будущей клавиатуры и выставляем нужные настройки
-        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup(buttons);
-        keyboardMarkup.resizeKeyboard(true); //подгоняем размер
-        keyboardMarkup.oneTimeKeyboard(true); //скрываем после использования
-
-        //добавляем лист кнопок в главный объект
-        return keyboardMarkup;
+    public void parsing(String text, Long chatId) {
+        Pattern pattern = Pattern.compile(parsePhone);
+        Matcher matcher = pattern.matcher(text);
+        if (matcher.matches()) {
+            String phone = matcher.group(1);
+            String name = matcher.group(3);
+            UserEntity userEntity = userRepository.getUserEntitiesByChatId(chatId);
+            if (userEntity == null) {
+                userEntity = new UserEntity(chatId, name, phone);
+            } else {
+                userEntity.setUserName(name);
+                userEntity.setPhone(phone);
+            }
+            userRepository.save(userEntity);
+            logger.info("Контакты сохранены.");
+            sendResponse(chatId, "Спасибо, контакты сохранены.", true);
+        }
     }
 }

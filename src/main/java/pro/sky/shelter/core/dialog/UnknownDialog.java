@@ -1,6 +1,5 @@
 package pro.sky.shelter.core.dialog;
 
-import com.pengrad.telegrambot.model.request.KeyboardButton;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import pro.sky.shelter.core.dto.DialogDto;
@@ -21,12 +20,7 @@ public class UnknownDialog implements DialogInterface {
     }
 
     @Override
-    public String getMessage() {
+    public String getMessage(Long chatId) {
         return PROBLEM_OCCURS_MSG;
-    }
-
-    @Override
-    public KeyboardButton[] getButtons() {
-        return KEYBOARD_ALL_BUTTONS;
     }
 }

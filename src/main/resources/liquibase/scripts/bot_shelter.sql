@@ -32,16 +32,16 @@ CREATE TABLE animal_photo
 -- changeset usov:4
 CREATE TYPE animal_type AS ENUM('DOG','CAT');
 
--- changeset usov:5
+-- changeset usov:7
 CREATE TABLE animal
 (
     id          SERIAL PRIMARY KEY,
-    animal_type animal_type,
+    animal_type VARCHAR(3),
     animal_name TEXT
 
 );
 
--- changeset usov:6
+-- changeset usov:8
 CREATE TABLE report
 (
     id              SERIAL PRIMARY KEY,

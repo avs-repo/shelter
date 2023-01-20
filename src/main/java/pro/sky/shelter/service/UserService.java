@@ -3,72 +3,155 @@ package pro.sky.shelter.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import pro.sky.shelter.core.dto.UserDto;
+import pro.sky.shelter.core.dto.DialogDto;
+import pro.sky.shelter.core.entity.AnimalEntity;
+import pro.sky.shelter.core.exception.AnimalNotFoundException;
+import pro.sky.shelter.core.exception.UserNotFoundException;
+import pro.sky.shelter.core.record.RecordMapper;
+import pro.sky.shelter.core.record.ReportRecord;
+import pro.sky.shelter.core.record.UserRecord;
 import pro.sky.shelter.core.entity.UserEntity;
+import pro.sky.shelter.core.repository.AnimalRepository;
 import pro.sky.shelter.core.repository.UserRepository;
 
 import java.util.Collection;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final AnimalRepository animalRepository;
+    private final RecordMapper recordMapper;
     private final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, AnimalRepository animalRepository, RecordMapper recordMapper) {
         this.userRepository = userRepository;
+        this.animalRepository = animalRepository;
+        this.recordMapper = recordMapper;
     }
 
-    public UserEntity getUserByIdOrNew(Long id) {
-        logger.info("Method getChatByIdOrNew was start for find User by id = {}, or return new User", id);
-        UserEntity user = userRepository.getUserEntityByChatId(id);
-        if (user == null) {
-            logger.debug("Method getUserEntityByChatId will return the new chat");
-            user = new UserEntity();
-            user.setId(id);
-            userRepository.save(user);
-            return user;
+    public UserRecord createUser(DialogDto dialogDto) {
+        UserRecord userRecord = findUserByChatId(dialogDto.chatId());
+        if (userRecord == null) {
+            userRecord = new UserRecord();
+            userRecord.setChatId(dialogDto.chatId());
+            userRecord.setUserName(dialogDto.name());
+            userRepository.save(recordMapper.toEntity(userRecord));
         }
-        logger.debug("Method getChatByIdOrNew will return the found chat");
-        return user;
+        return userRecord;
     }
 
-    public UserEntity addUser(Long id) {
-        UserEntity user = new UserEntity();
-        user.setId(id);
-        return addUser(user);
+    /**
+     * Метод находит всех пользователей в БД
+     *
+     * @return возвращает список пользователей
+     */
+    public Collection<UserRecord> getAllUsers() {
+        logger.info("Was invoked method for get all users");
+        return userRepository.findAll().stream()
+                .map(recordMapper::toRecord)
+                .collect(Collectors.toList());
     }
 
-    public UserEntity addUser(UserEntity user) {
-        return userRepository.save(user);
+    /**
+     * Метод находит пользователя по id
+     *
+     * @param id id пользователя
+     * @return возвращает найденного пользователя
+     */
+    public UserRecord findUserById(Long id) {
+        logger.info("Вызов метода поиска пользователя по id");
+        return recordMapper.toRecord(userRepository.findById(id)
+                .orElseThrow(() -> {
+                    logger.error("Не найден пользователь с id = {}", id);
+                    return new UserNotFoundException(id);
+                }));
     }
 
-    public UserEntity findUser(Long id) {
-        return userRepository.getUserEntityByChatId(id);
+    public UserRecord findUserByChatId(Long chatId) {
+        logger.info("Вызов метода поиска пользователя по chatId");
+        return recordMapper.toRecord(userRepository.findUserEntityByChatId(chatId)
+                .orElseThrow(() -> {
+                    logger.error("Не найден пользователь с id = {}", chatId);
+                    return new UserNotFoundException(chatId);
+                }));
     }
 
-    public void deleteUser(Long id) {
-        UserEntity user = new UserEntity();
-        user.setId(id);
-        deleteUser(user);
+    /**
+     * Метод находит все отчеты пользователя
+     *
+     * @param id id пользователя
+     * @return возвращает список отчетов
+     */
+    public Collection<ReportRecord> findReportsByUser(Long id) {
+        logger.info("Вызов метода поиска отчетов пользователя");
+        return userRepository.findById(id)
+                .map(UserEntity::getReportEntity)
+                .map(reports ->
+                        reports.stream()
+                                .map(recordMapper::toRecord)
+                                .collect(Collectors.toList()))
+                .orElseThrow(() -> {
+                    logger.error("Не найден пользователь с id = {}", id);
+                    return new UserNotFoundException(id);
+                });
     }
 
-    public void deleteUser(UserEntity user) {
-        userRepository.delete(user);
+    /**
+     * Метод добавляет пользователю животное(Волонтер добавляет животное, когда пользователь забирает его из приюта)
+     *
+     * @param id       id пользователя
+     * @param animalId id животного
+     * @return возвращает пользователя, который забрал животное из приюта
+     */
+    public UserRecord patchUserAnimal(Long id, Long animalId) {
+        logger.info("Вызов метода добавления животного пользователю");
+        Optional<UserEntity> optionalUser = userRepository.findById(id);
+        Optional<AnimalEntity> optionalAnimal = animalRepository.findById(animalId);
+        if (optionalUser.isEmpty()) {
+            logger.error("Не найден пользователь с id = {}", id);
+            throw new UserNotFoundException(id);
+        }
+        if (optionalAnimal.isEmpty()) {
+            logger.error("Не найдено животное с id = {}", animalId);
+            throw new AnimalNotFoundException(animalId);
+        }
+        UserEntity userEntity = optionalUser.get();
+        userEntity.setAnimalEntity(optionalAnimal.get());
+        return recordMapper.toRecord(userRepository.save(userEntity));
     }
 
-    public UserDto createUser(UserDto userDto) {
-        return null;
+    /**
+     * Метод ищет пользователя по животному
+     *
+     * @param animalId - id животного
+     * @return возвращает пользователя
+     */
+    public UserRecord findUserByAnimal(long animalId) {
+        logger.info("Вызов метода поиска пользователя по животному");
+        AnimalEntity animalEntity = animalRepository.findById(animalId)
+                .orElseThrow(() -> {
+                    logger.error("Не найдено животное с id = {}", animalId);
+                    return new AnimalNotFoundException(animalId);
+                });
+        return recordMapper.toRecord(userRepository.findByAnimalEntity(animalEntity));
     }
 
-    public Collection<UserDto> getAll() {
-        return null;
-    }
-
-    public UserDto updateUser(UserDto userDto) {
-        return null;
-    }
-
-    public UserDto readUser(Long id) {
-        return null;
+    /**
+     * Метод удаляет пользователя из БД
+     *
+     * @param id id пользователя
+     * @return возвращает удаленного пользователя
+     */
+    public UserEntity deleteUser(Long id) {
+        logger.info("Вызов метода удаления пользователя");
+        UserEntity userEntity = userRepository.findById(id)
+                .orElseThrow(() -> {
+                    logger.error("Не найден пользователь с id = {}", id);
+                    return new UserNotFoundException(id);
+                });
+        userRepository.delete(userEntity);
+        return userEntity;
     }
 }
