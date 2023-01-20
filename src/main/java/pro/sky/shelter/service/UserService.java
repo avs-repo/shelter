@@ -31,6 +31,11 @@ public class UserService {
         this.recordMapper = recordMapper;
     }
 
+    /**
+     * Метод добавления пользователя в БД
+     *
+     * @return возвращает рекорд созданного пользователя
+     */
     public UserRecord createUser(DialogDto dialogDto) {
         UserRecord userRecord = findUserByChatId(dialogDto.chatId());
         if (userRecord == null) {
@@ -48,7 +53,7 @@ public class UserService {
      * @return возвращает список пользователей
      */
     public Collection<UserRecord> getAllUsers() {
-        logger.info("Was invoked method for get all users");
+        logger.info("Вызов метода получения всех пользователей из БД");
         return userRepository.findAll().stream()
                 .map(recordMapper::toRecord)
                 .collect(Collectors.toList());
@@ -99,7 +104,7 @@ public class UserService {
     }
 
     /**
-     * Метод добавляет пользователю животное(Волонтер добавляет животное, когда пользователь забирает его из приюта)
+     * Метод добавляет пользователю животное
      *
      * @param id       id пользователя
      * @param animalId id животного

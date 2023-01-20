@@ -146,28 +146,6 @@ public class UserController {
         return userService.patchUserAnimal(id, animalId);
     }
 
-/*    @Operation(
-            summary = "Просмотр фотографии животного",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Просмотр фотографии животного",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ContentSaverService.class)
-                            )
-                    )
-            }
-    )
-    @GetMapping("/{id}/photo")
-    public ResponseEntity<byte[]> readPhotoFromDb(@Parameter(description = "Введите id фотографии", example = "1")
-                                                   @PathVariable long id) {
-        Pair<String, byte[]> pair = contentSaverService.readAvatarFromDb(id);
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(pair.getFirst()))
-                .contentLength(pair.getSecond().length)
-                .body(pair.getSecond());
-    }*/
     /**
      * Удаление пользователя из БД
      */

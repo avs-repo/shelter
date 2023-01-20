@@ -5,7 +5,6 @@ import org.springframework.stereotype.Repository;
 import pro.sky.shelter.core.entity.AnimalEntity;
 import pro.sky.shelter.core.entity.UserEntity;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
