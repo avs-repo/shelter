@@ -5,14 +5,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
-
 @Getter
 @Setter
-
 @Table(name = "report")
-
 public class ReportEntity {
 
     @Id
@@ -63,5 +61,15 @@ public class ReportEntity {
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ReportEntity that)) return false;
+        return Objects.equals(id, that.id) && Objects.equals(date, that.date) && Objects.equals(animalName, that.animalName) && Objects.equals(diet, that.diet) && Objects.equals(health, that.health) && Objects.equals(behavior, that.behavior) && Objects.equals(animalPhotoEntity, that.animalPhotoEntity) && Objects.equals(userEntity, that.userEntity);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, date, animalName, diet, health, behavior, animalPhotoEntity, userEntity);
+    }
 }

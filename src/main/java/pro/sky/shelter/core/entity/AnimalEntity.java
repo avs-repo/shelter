@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import pro.sky.shelter.core.model.AnimalType;
 
+import java.util.Objects;
+
 /**
  * Animal class, for storing information about an animal
  */
@@ -13,7 +15,6 @@ import pro.sky.shelter.core.model.AnimalType;
 @Getter
 @Setter
 @Table(name = "animal")
-
 public class AnimalEntity {
 
     /**
@@ -35,4 +36,15 @@ public class AnimalEntity {
     @Column(name = "animal_name")
     private String animalName;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AnimalEntity that)) return false;
+        return Objects.equals(id, that.id) && animalType == that.animalType && Objects.equals(animalName, that.animalName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, animalType, animalName);
+    }
 }

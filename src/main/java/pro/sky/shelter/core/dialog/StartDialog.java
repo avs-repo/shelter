@@ -1,10 +1,9 @@
 package pro.sky.shelter.core.dialog;
 
-import com.pengrad.telegrambot.model.request.KeyboardButton;
 import org.springframework.stereotype.Component;
 import pro.sky.shelter.core.dto.DialogDto;
-import pro.sky.shelter.core.entity.UserEntity;
-import pro.sky.shelter.core.repository.UserRepository;
+import pro.sky.shelter.core.record.UserRecord;
+import pro.sky.shelter.service.UserService;
 
 import static pro.sky.shelter.configuration.BotConstants.*;
 
@@ -16,12 +15,11 @@ import static pro.sky.shelter.configuration.BotConstants.*;
 @Component
 public class StartDialog implements DialogInterface {
 
-    private final UserRepository repository;
-    private boolean isNewDialog = false;
-    private UserEntity entity;
+    private final UserService userService;
+    private DialogDto dialog;
 
-    public StartDialog(UserRepository repository) {
-        this.repository = repository;
+    public StartDialog(UserService userService) {
+        this.userService = userService;
     }
 
     @Override
@@ -31,21 +29,8 @@ public class StartDialog implements DialogInterface {
 
     @Override
     public boolean process(DialogDto dialogDto) {
-        entity = getEntity(dialogDto);
-        repository.save(entity);
+        dialog = dialogDto;
         return true;
-    }
-
-    private UserEntity getEntity(DialogDto dialogDto) {
-        UserEntity userEntity = repository.getUserEntityByChatId(dialogDto.chatId());
-        if (userEntity == null) {
-            userEntity = new UserEntity();
-            isNewDialog = true;
-
-            userEntity.setChatId(dialogDto.chatId());
-            userEntity.setUserName(dialogDto.name());
-        }
-        return userEntity;
     }
 
     /**
@@ -54,16 +39,13 @@ public class StartDialog implements DialogInterface {
      * @return Welcome message as String
      */
     @Override
-    public String getMessage() {
-        if (isNewDialog) {
+    public String getMessage(Long chatId) {
+        UserRecord userRecord = userService.findUserByChatId(chatId);
+        if (userRecord == null) {
+            userService.createUser(dialog);
             return GREETING_MSG;
         } else {
-            return "Здравствуйте " + entity.getUserName() + ".\nЧем можем помочь?";
+            return "Здравствуйте " + userRecord.getUserName() + "!\nВы ранее уже обращались к нам.\nЧем можем помочь?";
         }
-    }
-
-    @Override
-    public KeyboardButton[] getButtons() {
-        return KEYBOARD_ALL_BUTTONS;
     }
 }

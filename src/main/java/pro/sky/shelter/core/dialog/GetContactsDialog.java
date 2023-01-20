@@ -1,11 +1,14 @@
 package pro.sky.shelter.core.dialog;
 
-import com.pengrad.telegrambot.model.request.KeyboardButton;
 import org.springframework.stereotype.Component;
 import pro.sky.shelter.core.dto.DialogDto;
 
 import static pro.sky.shelter.configuration.BotConstants.*;
-
+/**
+ * Dialog - получение контактных данных (телефон Имя)
+ *
+ * @autor Shikunov Andrey
+ */
 @Component
 public class GetContactsDialog implements DialogInterface {
     @Override
@@ -24,12 +27,7 @@ public class GetContactsDialog implements DialogInterface {
      * @return Get user contacts message as String
      */
     @Override
-    public String getMessage() {
+    public String getMessage(Long chatId) {
         return USER_CONTACTS_MSG;
-    }
-
-    @Override
-    public KeyboardButton[] getButtons() {
-        return KEYBOARD_ALL_BUTTONS;
     }
 }

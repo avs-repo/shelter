@@ -1,11 +1,15 @@
 package pro.sky.shelter.core.dialog;
 
-import com.pengrad.telegrambot.model.request.KeyboardButton;
 import org.springframework.stereotype.Component;
 import pro.sky.shelter.core.dto.DialogDto;
 
 import static pro.sky.shelter.configuration.BotConstants.*;
 
+/**
+ * Dialog - информация о мерах безопасности
+ *
+ * @autor Shikunov Andrey
+ */
 @Component
 public class SafetyDialog implements DialogInterface {
     @Override
@@ -24,12 +28,7 @@ public class SafetyDialog implements DialogInterface {
      * @return Shelter's safety rules message as String
      */
     @Override
-    public String getMessage() {
+    public String getMessage(Long chatId) {
         return SAFETY_MSG;
-    }
-
-    @Override
-    public KeyboardButton[] getButtons() {
-        return KEYBOARD_ALL_BUTTONS;
     }
 }

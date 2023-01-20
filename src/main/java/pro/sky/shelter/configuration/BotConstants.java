@@ -1,6 +1,7 @@
 package pro.sky.shelter.configuration;
 
 import com.pengrad.telegrambot.model.request.KeyboardButton;
+import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
 
 /**
  * Class of String constants
@@ -59,7 +60,8 @@ public class BotConstants {
             - открывать вольеры и закрытые двери без разрешения работника приюта
             - трогать миски животных
             - залезать в будки""";
-    public static final String USER_CONTACTS_MSG = "Оставьте Ваш номер телефона в формате (ХХХ)ХХХ-ХХ-ХХ и мы обязательно с вами свяжемся.";
+    public static final String USER_CONTACTS_MSG = "Введите Ваши телефон и имя в формате " +
+            "\"+7-999-123-4567 Имя\" и мы обязательно с вами свяжемся.";
     public static final String VOLUNTEER_MSG = "Ожидайте, с Вами свяжется первый освободившийся волонтер";
     public static final String WARNING_MSG = """
             Дорогой усыновитель, мы заметили, что ты заполняешь отчет не так подробно, как необходимо. 
@@ -75,4 +77,8 @@ public class BotConstants {
                 new KeyboardButton(CATS_CMD),
                 new KeyboardButton(VOLUNTEER_CMD)
             };
+    public static final ReplyKeyboardMarkup KEYBOARD_FOR_USER = new ReplyKeyboardMarkup(
+            new String[]{SHELTER_INFO_CMD, SAFETY_CMD},
+            new String[]{USER_CONTACTS_CMD, DOGS_CMD},
+            new String[]{CATS_CMD, VOLUNTEER_CMD});
 }

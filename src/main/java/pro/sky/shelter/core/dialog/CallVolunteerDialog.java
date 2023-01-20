@@ -1,11 +1,15 @@
 package pro.sky.shelter.core.dialog;
 
-import com.pengrad.telegrambot.model.request.KeyboardButton;
 import org.springframework.stereotype.Component;
 import pro.sky.shelter.core.dto.DialogDto;
 
 import static pro.sky.shelter.configuration.BotConstants.*;
 
+/**
+ * Dialog - позвать волонтера
+ *
+ * @autor Shikunov Andrey
+ */
 @Component
 public class CallVolunteerDialog implements DialogInterface {
 
@@ -25,12 +29,7 @@ public class CallVolunteerDialog implements DialogInterface {
      * @return volunteer message as String
      */
     @Override
-    public String getMessage() {
+    public String getMessage(Long chatId) {
         return VOLUNTEER_MSG;
-    }
-
-    @Override
-    public KeyboardButton[] getButtons() {
-        return KEYBOARD_ALL_BUTTONS;
     }
 }

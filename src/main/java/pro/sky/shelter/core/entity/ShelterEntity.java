@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Objects;
+
 /**
  * PostgresSQL data base Entity
  *
@@ -37,4 +39,15 @@ public class ShelterEntity {
     @Column(name = "opening_hours")
     private String openingHours;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ShelterEntity that)) return false;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(address, that.address) && Objects.equals(openingHours, that.openingHours);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, address, openingHours);
+    }
 }
