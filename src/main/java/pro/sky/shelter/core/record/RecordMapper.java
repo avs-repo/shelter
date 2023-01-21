@@ -64,7 +64,7 @@ public class RecordMapper {
     }
 
     public UserEntity toEntity(UserRecord userRecord) {
-        UserEntity userEntity = new UserEntity(userRecord.getChatId(),userRecord.getUserName(),userRecord.getPhone());
+        UserEntity userEntity = new UserEntity(userRecord.getChatId(), userRecord.getUserName(), userRecord.getPhone());
         if (userRecord.getAnimalRecord() != null) {
             AnimalEntity animalEntity = toEntity(userRecord.getAnimalRecord());
             animalEntity.setId(userRecord.getAnimalRecord().getId());

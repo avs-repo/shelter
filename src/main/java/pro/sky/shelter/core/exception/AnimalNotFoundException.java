@@ -5,7 +5,6 @@ public class AnimalNotFoundException extends RuntimeException{
     public AnimalNotFoundException(long id) {
         this.id = id;
     }
-
     public long getId() {
         return id;
     }

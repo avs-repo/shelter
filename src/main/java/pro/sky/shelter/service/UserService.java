@@ -50,7 +50,7 @@ public class UserService {
     /**
      * Метод находит всех пользователей в БД
      *
-     * @return возвращает список пользователей
+     * @return возвращает List пользователей
      */
     public Collection<UserRecord> getAllUsers() {
         logger.info("Вызов метода получения всех пользователей из БД");
@@ -62,7 +62,7 @@ public class UserService {
     /**
      * Метод находит пользователя по id
      *
-     * @param id id пользователя
+     * @param id - id пользователя
      * @return возвращает найденного пользователя
      */
     public UserRecord findUserById(Long id) {
@@ -74,6 +74,12 @@ public class UserService {
                 }));
     }
 
+    /**
+     * Метод находит пользователя по chatId
+     *
+     * @param chatId - чат пользователя
+     * @return возвращает найденного пользователя
+     */
     public UserRecord findUserByChatId(Long chatId) {
         logger.info("Вызов метода поиска пользователя по chatId");
         return recordMapper.toRecord(userRepository.findUserEntityByChatId(chatId)
@@ -86,8 +92,8 @@ public class UserService {
     /**
      * Метод находит все отчеты пользователя
      *
-     * @param id id пользователя
-     * @return возвращает список отчетов
+     * @param id - id пользователя
+     * @return возвращает List отчетов пользователя
      */
     public Collection<ReportRecord> findReportsByUser(Long id) {
         logger.info("Вызов метода поиска отчетов пользователя");
@@ -106,8 +112,8 @@ public class UserService {
     /**
      * Метод добавляет пользователю животное
      *
-     * @param id       id пользователя
-     * @param animalId id животного
+     * @param id       - id пользователя
+     * @param animalId - id животного
      * @return возвращает пользователя, который забрал животное из приюта
      */
     public UserRecord patchUserAnimal(Long id, Long animalId) {
@@ -128,25 +134,9 @@ public class UserService {
     }
 
     /**
-     * Метод ищет пользователя по животному
-     *
-     * @param animalId - id животного
-     * @return возвращает пользователя
-     */
-    public UserRecord findUserByAnimal(long animalId) {
-        logger.info("Вызов метода поиска пользователя по животному");
-        AnimalEntity animalEntity = animalRepository.findById(animalId)
-                .orElseThrow(() -> {
-                    logger.error("Не найдено животное с id = {}", animalId);
-                    return new AnimalNotFoundException(animalId);
-                });
-        return recordMapper.toRecord(userRepository.findByAnimalEntity(animalEntity));
-    }
-
-    /**
      * Метод удаляет пользователя из БД
      *
-     * @param id id пользователя
+     * @param id - id пользователя
      * @return возвращает удаленного пользователя
      */
     public UserEntity deleteUser(Long id) {

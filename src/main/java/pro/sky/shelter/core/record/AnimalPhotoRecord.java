@@ -11,6 +11,7 @@ import lombok.Setter;
 public class AnimalPhotoRecord {
     private Long id;
     private String mediaType;
+
     public AnimalPhotoRecord(Long id, String mediaType) {
         this.id = id;
         this.mediaType = mediaType;
