@@ -75,7 +75,7 @@ public class ContentSaverService {
     /**
      * Метод получения либо создания пути сохранения файла.
      *
-     * @param idChat     - используется для создания директорий пользователей
+     * @param idChat - используется для создания директорий пользователей
      * @param fileFormat - расширение файла
      * @return Path к месту сохранения файла
      */
@@ -94,7 +94,7 @@ public class ContentSaverService {
                     String fileName =
                             ldt.getYear() + "." + ldt.getMonthValue() + "." + ldt.getDayOfMonth() + "_"
                                     + ldt.getHour() + "." + ldt.getMinute()
-                                    + "." + fileFormat;
+                                    + fileFormat;
                     return Path.of(pathFolder + fileName);
                 }
             }
