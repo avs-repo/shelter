@@ -5,16 +5,17 @@ import org.springframework.stereotype.Component;
 import pro.sky.shelter.core.dto.DialogDto;
 
 import static pro.sky.shelter.configuration.BotConstants.*;
+
 /**
- * Dialog - получение контактных данных (телефон Имя)
+ * /dog shelter dialog
  *
  * @autor Shikunov Andrey
  */
 @Component
-public class GetContactsDialog implements DialogInterface {
+public class TransportationDialog implements DialogInterface {
     @Override
     public boolean isSupport(DialogDto dialogDto) {
-        return dialogDto.message().equals(USER_CONTACTS_CMD);
+        return dialogDto.message().equals(TRANSPORTATION_CMD);
     }
 
     @Override
@@ -23,17 +24,17 @@ public class GetContactsDialog implements DialogInterface {
     }
 
     /**
-     * Get user contact information
+     * Диалог "Что нужно для транспортировки"
      *
-     * @return Get user contacts message as String
+     * @return Сообщение пользователю, как String
      */
     @Override
     public String getMessage(Long chatId) {
-        return USER_CONTACTS_MSG;
+        return TRANSPORTATION_MSG;
     }
 
     @Override
     public ReplyKeyboardMarkup getKeyboard() {
-        return SHELTER_KEYBOARD;
+        return CONSULTING_KEYBOARD;
     }
 }

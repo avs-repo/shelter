@@ -35,6 +35,6 @@ public class SafetyDialog implements DialogInterface {
 
     @Override
     public ReplyKeyboardMarkup getKeyboard() {
-        return WELCOME_KEYBOARD;
+        return SHELTER_KEYBOARD;
     }
 }

@@ -106,9 +106,8 @@ public class BotConstants {
 
     public static final ReplyKeyboardMarkup CONSULTING_KEYBOARD = new ReplyKeyboardMarkup(
             new String[]{MEET_DOG_RULES_CMD, DOCUMENT_LIST_CMD},
-            new String[]{TRANSPORTATION_CMD, HOME_PREPARATION_CMD},
-            new String[]{FROM_TRAINER_CMD, DECLINE_REASONS_CMD},
-            new String[]{USER_CONTACTS_CMD, VOLUNTEER_CMD},
-            new String[]{GO_BACK_CMD});
+            new String[]{TRANSPORTATION_CMD, HOME_PREPARATION_CMD, FROM_TRAINER_CMD},
+            new String[]{DECLINE_REASONS_CMD, USER_CONTACTS_CMD},
+            new String[]{VOLUNTEER_CMD, GO_BACK_CMD});
 
 }

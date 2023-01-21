@@ -46,7 +46,7 @@ public class StartDialog implements DialogInterface {
             userService.createUser(dialog);
             return GREETING_MSG;
         } else {
-            return "Здравствуйте " + userRecord.getUserName() + "!\nЧем можем помочь?";
+            return "Здравствуйте " + userRecord.getUserName() + "!\nЧем могу помочь?";
         }
     }
 
