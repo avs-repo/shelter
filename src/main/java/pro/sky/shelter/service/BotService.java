@@ -4,7 +4,6 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
-import com.pengrad.telegrambot.response.SendResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -14,12 +13,11 @@ import pro.sky.shelter.core.dto.DialogDto;
 import pro.sky.shelter.core.entity.UserEntity;
 import pro.sky.shelter.core.repository.UserRepository;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static pro.sky.shelter.configuration.BotConstants.KEYBOARD_FOR_USER;
+import static pro.sky.shelter.configuration.BotConstants.WELCOME_KEYBOARD;
 
 /**
  * Main service for TelegramBot
@@ -36,19 +34,18 @@ public class BotService {
 
     private final String parsePhone = "([+][7]-\\d{3}-\\d{3}-\\d{2}-\\d{2})(\\s)([\\W+]+)";
     private final UserRepository userRepository;
-    private final AnimalService animalService;
+    private final ContentSaverService contentSaverService;
     private final Logger logger = LoggerFactory.getLogger(BotService.class);
 
     /**
      * Map of supported dialogs
      */
     private final Map<String, DialogInterface> supportedDialogs;
-    private final ContentSaverService contentSaverService;
 
-    public BotService(TelegramBot bot, UserRepository userRepository, AnimalService animalService, Map<String, DialogInterface> supportedDialogs, ContentSaverService contentSaverService) {
+
+    public BotService(TelegramBot bot, UserRepository userRepository, Map<String, DialogInterface> supportedDialogs, ContentSaverService contentSaverService) {
         this.telegramBot = bot;
         this.userRepository = userRepository;
-        this.animalService = animalService;
         this.supportedDialogs = supportedDialogs;
         this.contentSaverService = contentSaverService;
     }
@@ -62,30 +59,25 @@ public class BotService {
      */
     public void process(Update update) {
         if (update == null || update.message().document() != null) {
-            logger.debug("Method processUpdate detected document or null update");
+            logger.debug("Получен document или null update");
             return;
         }
         for (DialogInterface dialog : supportedDialogs.values()) {
             Message incomeMessage = update.message();
             if (update.message() == null) {
-                logger.debug("ChatId={}; Detected null message in update", incomeMessage.chat().id());
+                logger.debug("ChatId={}; получено null сообщение", incomeMessage.chat().id());
                 return;
             }
             if (incomeMessage.photo() != null) {
-                int maxPhotoIndex = update.message().photo().length - 1;
-                if (update.message().photo()[maxPhotoIndex].fileId() != null) {
-                    try {
-                        contentSaverService.savePhoto(update);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                if (update.message().photo()[update.message().photo().length - 1].fileId() != null) {
+                    contentSaverService.uploadPhoto(update);
                     return;
                 } else {
-                    logger.debug("ChatId={}; Detected null fileId in photo", incomeMessage.chat().id());
+                    logger.debug("ChatId={}; Похоже получено null фото", incomeMessage.chat().id());
                 }
             } else if (incomeMessage.text() != null) {
                 if (incomeMessage.text().matches(parsePhone)) {
-                    logger.info("ChatId={}; Parsing phone number", incomeMessage.chat().id());
+                    logger.info("ChatId={}; Получаем номер телефона из сообщения", incomeMessage.chat().id());
                     parsing(incomeMessage.text(), incomeMessage.chat().id());
                     return;
                 }
@@ -94,23 +86,30 @@ public class BotService {
                     sendResponse(dto.chatId(), dialog.getMessage(dto.chatId()), true);
                     return;
                 } else {
-                    logger.debug("ChatId={}; Detected null text in message", incomeMessage.chat().id());
+                    logger.debug("ChatId={}; Получен пустой текст", incomeMessage.chat().id());
                 }
             }
         }
     }
 
     /**
-     * Gets the Telegram chatId, incoming message и enable keyboard
-     * <p>
-     * Executes the message send to user.
+     * Отправка сообщения пользователю
+     *
+     * @param chatId         - чат пользователя
+     * @param message        - сообщение для пользователя
+     * @param enableKeyboard - вкл/выкл клавиатуру
      */
     public void sendResponse(Long chatId, String message, boolean enableKeyboard) {
         SendMessage preparedMessage = new SendMessage(chatId, message);
-        if (enableKeyboard) preparedMessage.replyMarkup(KEYBOARD_FOR_USER);
+        if (enableKeyboard) preparedMessage.replyMarkup(WELCOME_KEYBOARD);
         telegramBot.execute(preparedMessage);
     }
 
+    /**
+     * Если сообщение в формате запрошенных контактов - тогда берем оттуда информацию.
+     * <p>
+     * Формат верен? Обновляем Телефон и Имя пользователя в БД.
+     */
     public void parsing(String text, Long chatId) {
         Pattern pattern = Pattern.compile(parsePhone);
         Matcher matcher = pattern.matcher(text);

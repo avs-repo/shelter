@@ -13,6 +13,8 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
     UserEntity findByAnimalEntity(AnimalEntity animalEntity);
+
     Optional<UserEntity> findUserEntityByChatId(Long chatId);
+
     UserEntity getUserEntitiesByChatId(Long chatId);
 }

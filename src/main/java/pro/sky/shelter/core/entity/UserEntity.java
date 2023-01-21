@@ -54,6 +54,7 @@ public class UserEntity {
     public UserEntity() {
 
     }
+
     public UserEntity(Long chatId, String userName, String phone) {
         this.userName = userName;
         this.chatId = chatId;

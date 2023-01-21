@@ -12,13 +12,12 @@ import pro.sky.shelter.core.entity.ReportEntity;
 import pro.sky.shelter.core.entity.UserEntity;
 import pro.sky.shelter.core.record.ReportRecord;
 import pro.sky.shelter.core.record.UserRecord;
-import pro.sky.shelter.service.ContentSaverService;
 import pro.sky.shelter.service.UserService;
 
 import java.util.Collection;
 
 /**
- * Контроллер пользователей
+ * Контроллер - работа с пользователями
  *
  * @autor Shikunov Andrey
  */
@@ -26,11 +25,9 @@ import java.util.Collection;
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
-    private final ContentSaverService contentSaverService;
 
-    public UserController(UserService userService, ContentSaverService contentSaverService) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.contentSaverService = contentSaverService;
     }
 
     /**
@@ -99,38 +96,12 @@ public class UserController {
         return userService.findReportsByUser(id);
     }
 
-    /**
-     * Поиск пользователя по животному
-     */
     @Operation(
-            summary = "Поиск пользователя по животному",
+            summary = "Привязка животного к пользователю по их id",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Поиск пользователя по животному",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = UserEntity.class)
-                            )
-                    )
-            }
-    )
-    @GetMapping("/animal/{animalId}")
-    public UserRecord findUserByAnimal(@Parameter(description = "Введите id животного", example = "1")
-                                       @PathVariable Long animalId) {
-        return userService.findUserByAnimal(animalId);
-    }
-
-
-    /**
-     * Метод привязки животного к пользователю по их id
-     */
-    @Operation(
-            summary = "Привязка животного к пользователю",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Привязка животного к пользователю",
+                            description = "Привязка животного к пользователю по их id",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = UserEntity.class)
@@ -146,15 +117,12 @@ public class UserController {
         return userService.patchUserAnimal(id, animalId);
     }
 
-    /**
-     * Удаление пользователя из БД
-     */
     @Operation(
-            summary = "Удаление пользователя",
+            summary = "Удаление пользователя из БД",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Удаление пользователя",
+                            description = "Удаление пользователя из БД",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = UserEntity.class)
@@ -164,7 +132,7 @@ public class UserController {
     )
     @DeleteMapping("{id}")
     public UserEntity deleteUser(@Parameter(description = "Введите id пользователя", example = "1")
-                                     @PathVariable Long id) {
+                                 @PathVariable Long id) {
         return userService.deleteUser(id);
     }
 }

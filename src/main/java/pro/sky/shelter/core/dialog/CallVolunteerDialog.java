@@ -12,7 +12,6 @@ import static pro.sky.shelter.configuration.BotConstants.*;
  */
 @Component
 public class CallVolunteerDialog implements DialogInterface {
-
     @Override
     public boolean isSupport(DialogDto dialogDto) {
         return dialogDto.message().equals(VOLUNTEER_CMD);

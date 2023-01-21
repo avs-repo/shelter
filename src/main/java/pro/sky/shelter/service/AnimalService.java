@@ -26,8 +26,8 @@ public class AnimalService {
     /**
      * Метод создает животное в БД
      *
-     * @param animalRecord животное
-     * @return возвращает созданное животное
+     * @param animalRecord - животное
+     * @return возвращает животное которое создал
      */
     public AnimalRecord createAnimal(AnimalRecord animalRecord) {
         logger.info("Вызов метода создания животного");
@@ -38,7 +38,7 @@ public class AnimalService {
     /**
      * Метод находит всех животных в БД
      *
-     * @return возвращает животных
+     * @return возвращает List животных
      */
     public Collection<AnimalRecord> getAllAnimal() {
         logger.info("Вызов метода getAllAnimals");
@@ -50,8 +50,8 @@ public class AnimalService {
     /**
      * Метод находит животное по id
      *
-     * @param id id животного
-     * @return возвращает найденное животное
+     * @param id - id животного
+     * @return возвращает животное которое нашел
      */
     public AnimalRecord findAnimal(Long id) {
         logger.info("Вызов метода поиска животного");
@@ -65,9 +65,9 @@ public class AnimalService {
     /**
      * Метод изменяет параметры животного
      *
-     * @param id     id животного
-     * @param animalRecord животное
-     * @return возвращает измененное животное
+     * @param id           - id животного
+     * @param animalRecord - животное
+     * @return возвращает животное
      */
     public AnimalRecord editAnimal(Long id, AnimalRecord animalRecord) {
         logger.info("Вызов метода редактирования животного");
@@ -84,7 +84,7 @@ public class AnimalService {
     /**
      * Метод удаляет животное из БД
      *
-     * @param id id животного
+     * @param id - id животного
      * @return возвращает удаленное животное
      */
     public AnimalEntity deleteAnimal(Long id) {

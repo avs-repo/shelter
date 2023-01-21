@@ -32,6 +32,12 @@ public class BotListener implements UpdatesListener {
         telegramBot.setUpdatesListener(this);
     }
 
+    /**
+     * Метод обработки сообщений
+     *
+     * @param updates - обновления полученные ботом
+     * @return возвращает номер обработанного обновления
+     */
     @Override
     public int process(List<Update> updates) {
         try {
@@ -42,7 +48,6 @@ public class BotListener implements UpdatesListener {
         } catch (RuntimeException e) {
             e.printStackTrace();
         }
-
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
 
