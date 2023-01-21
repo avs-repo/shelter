@@ -1,8 +1,11 @@
 package pro.sky.shelter.core.dialog;
 
 import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 import pro.sky.shelter.core.dto.DialogDto;
+import pro.sky.shelter.service.BotService;
+import pro.sky.shelter.service.ContentSaverService;
 
 import static pro.sky.shelter.configuration.BotConstants.*;
 
@@ -13,7 +16,6 @@ import static pro.sky.shelter.configuration.BotConstants.*;
  */
 @Component
 public class ShelterContactsDialog implements DialogInterface {
-
     @Override
     public boolean isSupport(DialogDto dialogDto) {
         return dialogDto.message().equals(SHELTER_CONTACTS_CMD);

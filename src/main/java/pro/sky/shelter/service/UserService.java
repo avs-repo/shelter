@@ -33,10 +33,8 @@ public class UserService {
 
     /**
      * Метод добавления пользователя в БД
-     *
-     * @return возвращает рекорд созданного пользователя
      */
-    public UserRecord createUser(DialogDto dialogDto) {
+    public void createUser(DialogDto dialogDto) {
         UserRecord userRecord = findUserByChatId(dialogDto.chatId());
         if (userRecord == null) {
             userRecord = new UserRecord();
@@ -44,7 +42,6 @@ public class UserService {
             userRecord.setUserName(dialogDto.name());
             userRepository.save(recordMapper.toEntity(userRecord));
         }
-        return userRecord;
     }
 
     /**
@@ -112,7 +109,7 @@ public class UserService {
     /**
      * Метод добавляет пользователю животное
      *
-     * @param id       - id пользователя
+     * @param id - id пользователя
      * @param animalId - id животного
      * @return возвращает пользователя, который забрал животное из приюта
      */

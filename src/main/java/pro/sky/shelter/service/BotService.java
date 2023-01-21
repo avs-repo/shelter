@@ -5,8 +5,10 @@ import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
+import com.pengrad.telegrambot.request.SendPhoto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import pro.sky.shelter.core.dialog.DialogInterface;
@@ -25,8 +27,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.apache.commons.lang3.StringUtils.trim;
-import static pro.sky.shelter.configuration.BotConstants.SHELTER_KEYBOARD;
-import static pro.sky.shelter.configuration.BotConstants.WELCOME_KEYBOARD;
+import static pro.sky.shelter.configuration.BotConstants.*;
 
 /**
  * Main service for TelegramBot
@@ -41,8 +42,10 @@ public class BotService {
      */
     private final TelegramBot telegramBot;
     private final UserRepository userRepository;
+    private final ReportRepository reportRepository;
     private final ContentSaverService contentSaverService;
     private final Logger logger = LoggerFactory.getLogger(BotService.class);
+
     /**
      * RegEx для определения формата и парсинга контактных данных пользователя
      */
@@ -51,13 +54,14 @@ public class BotService {
      * RegEx для определения формата и парсинга информации для отчета о животном
      */
     private final String parseReport = "1[)](?<diet>[\\W+]+)2[)](?<health>[\\W+]+)3[)](?<behavior>[\\W+]+)";
+    /**
+     * Хранение отсылаемых пользователем на отчет данных
+     */
     private ReportHolder reportHolder = new ReportHolder();
     /**
-     * Map of supported dialogs
+     * Map поддерживаемых диалогов
      */
     private final Map<String, DialogInterface> supportedDialogs;
-    private final ReportRepository reportRepository;
-
 
     public BotService(TelegramBot bot, UserRepository userRepository, Map<String, DialogInterface> supportedDialogs, ContentSaverService contentSaverService, ReportRepository reportRepository) {
         this.telegramBot = bot;
@@ -96,14 +100,13 @@ public class BotService {
                     logger.debug("ChatId={}; Похоже получено null фото", incomeMessage.chat().id());
                 }
             } else if (incomeMessage.text() != null) {
-                if (incomeMessage.text().matches(parsePhone)) {
+                if (incomeMessage.text().matches(parsePhone)) {     //Начато получение телефона и имени
                     logger.info("ChatId={}; Получаем номер телефона из сообщения", incomeMessage.chat().id());
                     parsePhone(incomeMessage.text(), incomeMessage.chat().id());
                     sendResponse(incomeMessage.chat().id(), "Спасибо, контакты сохранены.", SHELTER_KEYBOARD);
                     return;
                 }
-                if (incomeMessage.text().matches(parseReport)) {
-                    //Начато получение отчета
+                if (incomeMessage.text().matches(parseReport)) {    //Начато получение отчета
                     logger.info("ChatId={}; Получаем данные отчета", incomeMessage.chat().id());
                     reportHolder.setUserEntity(userRepository.getUserEntitiesByChatId(incomeMessage.chat().id()));
                     parseReport(incomeMessage.text());
@@ -129,9 +132,25 @@ public class BotService {
      * @param keyboard - готовый ReplyKeyboardMarkup для применения
      */
     public void sendResponse(Long chatId, String message, ReplyKeyboardMarkup keyboard) {
-        SendMessage preparedMessage = new SendMessage(chatId, message);
-        if (keyboard != null) preparedMessage.replyMarkup(keyboard);
-        telegramBot.execute(preparedMessage);
+        if (message.equals(SHELTER_CONTACTS_MSG)) {
+            sendResponse(chatId, contentSaverService.getPhoto(1).getSecond(), null);
+        }
+            SendMessage preparedMessage = new SendMessage(chatId, message);
+            if (keyboard != null) preparedMessage.replyMarkup(keyboard);
+            telegramBot.execute(preparedMessage);
+    }
+
+    /**
+     * Отправка фотографии пользователю
+     *
+     * @param chatId - чат пользователя
+     * @param photo - фото которое нужно отправить в byte[]
+     * @param keyboard - готовый ReplyKeyboardMarkup для применения
+     */
+    public void sendResponse(Long chatId, byte[] photo, ReplyKeyboardMarkup keyboard) {
+        SendPhoto preparedPhoto = new SendPhoto(chatId, photo);
+        if (keyboard != null) preparedPhoto.replyMarkup(keyboard);
+        telegramBot.execute(preparedPhoto);
     }
 
     /**
