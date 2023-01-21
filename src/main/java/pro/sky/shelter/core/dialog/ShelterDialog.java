@@ -1,12 +1,13 @@
 package pro.sky.shelter.core.dialog;
 
+import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
 import org.springframework.stereotype.Component;
 import pro.sky.shelter.core.dto.DialogDto;
 
 import static pro.sky.shelter.configuration.BotConstants.*;
 
 /**
- * Dialog - информация о приюте (Адрес, телефон)
+ * Dialog - информация о приюте
  *
  * @autor Shikunov Andrey
  */
@@ -24,12 +25,16 @@ public class ShelterDialog implements DialogInterface {
     }
 
     /**
-     * shelter contact information message
+     * shelter main information message
      *
      * @return Dog shelter message as String
      */
     @Override
     public String getMessage(Long chatId) {
         return SHELTER_INFO_MSG;
+    }
+    @Override
+    public ReplyKeyboardMarkup getKeyboard() {
+        return SHELTER_KEYBOARD;
     }
 }

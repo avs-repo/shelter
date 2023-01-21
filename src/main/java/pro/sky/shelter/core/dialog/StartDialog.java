@@ -1,5 +1,6 @@
 package pro.sky.shelter.core.dialog;
 
+import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
 import org.springframework.stereotype.Component;
 import pro.sky.shelter.core.dto.DialogDto;
 import pro.sky.shelter.core.record.UserRecord;
@@ -24,7 +25,7 @@ public class StartDialog implements DialogInterface {
 
     @Override
     public boolean isSupport(DialogDto dialogDto) {
-        return dialogDto.message().equals(INITIAL_CMD);
+        return dialogDto.message().equals(INITIAL_CMD) || dialogDto.message().equals(GO_BACK_CMD);
     }
 
     @Override
@@ -45,7 +46,12 @@ public class StartDialog implements DialogInterface {
             userService.createUser(dialog);
             return GREETING_MSG;
         } else {
-            return "Здравствуйте " + userRecord.getUserName() + "!\nВы ранее уже обращались к нам.\nЧем можем помочь?";
+            return "Здравствуйте " + userRecord.getUserName() + "!\nЧем можем помочь?";
         }
+    }
+
+    @Override
+    public ReplyKeyboardMarkup getKeyboard() {
+        return WELCOME_KEYBOARD;
     }
 }

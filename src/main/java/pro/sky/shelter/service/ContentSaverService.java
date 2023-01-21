@@ -41,7 +41,7 @@ public class ContentSaverService {
     /**
      * Метод загрузки фотографии в БД
      */
-    public void uploadPhoto(Update update) {
+    public AnimalPhotoEntity uploadPhoto(Update update) {
         logger.info("Вызов метода загрузки фото из Update");
         Long idChat = update.message().chat().id();
         PhotoSize[] photoSizes = update.message().photo();
@@ -55,7 +55,7 @@ public class ContentSaverService {
             Path path = getAndCreatePath(idChat, fileExtension);
             if (path == null) {
                 logger.error("ChatId={}; метод загрузки фото не смог найти или создать папку", idChat);
-                return;
+                return null;
             }
             Files.write(path, data);
 
@@ -65,9 +65,11 @@ public class ContentSaverService {
             animalPhotoEntity.setMediaType(Files.probeContentType(path));
             animalPhotoEntity.setFilePath(path.toString());
             animalPhotoRepository.save(animalPhotoEntity);
+            return animalPhotoEntity;
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     /**

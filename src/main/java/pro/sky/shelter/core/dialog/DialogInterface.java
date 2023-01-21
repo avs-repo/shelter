@@ -1,5 +1,6 @@
 package pro.sky.shelter.core.dialog;
 
+import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
 import pro.sky.shelter.core.dto.DialogDto;
 
 /**
@@ -29,4 +30,10 @@ public interface DialogInterface {
      * @return Message as String
      */
     String getMessage(Long chatId);
+
+    /**
+     * Which keyboard use
+     * @return ReplyKeyboardMarkup to use;
+     */
+    ReplyKeyboardMarkup getKeyboard();
 }
