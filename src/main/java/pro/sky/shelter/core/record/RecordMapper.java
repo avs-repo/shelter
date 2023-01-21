@@ -72,19 +72,4 @@ public class RecordMapper {
         }
         return userEntity;
     }
-
-    public ReportEntity toEntity(ReportRecord reportRecord) {
-        ReportEntity reportEntity = new ReportEntity();
-        reportEntity.setAnimalName(reportRecord.getAnimalName());
-        reportEntity.setDate(reportRecord.getDate());
-        reportEntity.setDiet(reportRecord.getDiet());
-        reportEntity.setHealth(reportRecord.getHealth());
-        reportEntity.setBehavior(reportRecord.getBehavior());
-        if (reportRecord.getUserRecord() != null) {
-            UserEntity userEntity = toEntity(reportRecord.getUserRecord());
-            userEntity.setId(reportRecord.getUserRecord().getId());
-            reportEntity.setUserEntity(userEntity);
-        }
-        return reportEntity;
-    }
 }

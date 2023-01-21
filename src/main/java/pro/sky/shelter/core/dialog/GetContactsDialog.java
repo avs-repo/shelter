@@ -1,5 +1,6 @@
 package pro.sky.shelter.core.dialog;
 
+import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
 import org.springframework.stereotype.Component;
 import pro.sky.shelter.core.dto.DialogDto;
 
@@ -29,5 +30,10 @@ public class GetContactsDialog implements DialogInterface {
     @Override
     public String getMessage(Long chatId) {
         return USER_CONTACTS_MSG;
+    }
+
+    @Override
+    public ReplyKeyboardMarkup getKeyboard() {
+        return WELCOME_KEYBOARD;
     }
 }

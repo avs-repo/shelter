@@ -61,6 +61,19 @@ public class ReportEntity {
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 
+    public ReportEntity(String diet, String health, String behavior, UserEntity userEntity, LocalDateTime date, AnimalPhotoEntity animalPhotoEntity) {
+        this.diet = diet;
+        this.health = health;
+        this.behavior = behavior;
+        this.userEntity = userEntity;
+        this.date = date;
+        this.animalPhotoEntity = animalPhotoEntity;
+    }
+
+    public ReportEntity() {
+
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

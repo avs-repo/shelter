@@ -41,7 +41,7 @@ public class ContentSaverService {
     /**
      * Метод загрузки фотографии в БД
      */
-    public void uploadPhoto(Update update) {
+    public AnimalPhotoEntity uploadPhoto(Update update) {
         logger.info("Вызов метода загрузки фото из Update");
         Long idChat = update.message().chat().id();
         PhotoSize[] photoSizes = update.message().photo();
@@ -55,7 +55,7 @@ public class ContentSaverService {
             Path path = getAndCreatePath(idChat, fileExtension);
             if (path == null) {
                 logger.error("ChatId={}; метод загрузки фото не смог найти или создать папку", idChat);
-                return;
+                return null;
             }
             Files.write(path, data);
 
@@ -65,15 +65,17 @@ public class ContentSaverService {
             animalPhotoEntity.setMediaType(Files.probeContentType(path));
             animalPhotoEntity.setFilePath(path.toString());
             animalPhotoRepository.save(animalPhotoEntity);
+            return animalPhotoEntity;
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     /**
      * Метод получения либо создания пути сохранения файла.
      *
-     * @param idChat     - используется для создания директорий пользователей
+     * @param idChat - используется для создания директорий пользователей
      * @param fileFormat - расширение файла
      * @return Path к месту сохранения файла
      */
@@ -92,7 +94,7 @@ public class ContentSaverService {
                     String fileName =
                             ldt.getYear() + "." + ldt.getMonthValue() + "." + ldt.getDayOfMonth() + "_"
                                     + ldt.getHour() + "." + ldt.getMinute()
-                                    + "." + fileFormat;
+                                    + fileFormat;
                     return Path.of(pathFolder + fileName);
                 }
             }

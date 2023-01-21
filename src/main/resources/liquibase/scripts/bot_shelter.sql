@@ -40,7 +40,7 @@ CREATE TABLE animal
     animal_name TEXT
 );
 
--- changeset usov:10
+-- changeset usov:11
 CREATE TABLE report
 (
     id              SERIAL PRIMARY KEY,
@@ -50,7 +50,7 @@ CREATE TABLE report
     health          TEXT,
     behavior        TEXT,
     user_id         BIGINT REFERENCES users (id),
-    animal_photo_id BIGINT REFERENCES animal (id)
+    animal_photo_id BIGINT REFERENCES animal_photo (id)
 );
 
 
