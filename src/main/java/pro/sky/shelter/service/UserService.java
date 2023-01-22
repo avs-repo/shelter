@@ -15,6 +15,7 @@ import pro.sky.shelter.core.repository.AnimalRepository;
 import pro.sky.shelter.core.repository.UserRepository;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -34,14 +35,16 @@ public class UserService {
     /**
      * Метод добавления пользователя в БД
      */
-    public void createUser(DialogDto dialogDto) {
+    public boolean createUser(DialogDto dialogDto) {
         UserRecord userRecord = findUserByChatId(dialogDto.chatId());
         if (userRecord == null) {
             userRecord = new UserRecord();
             userRecord.setChatId(dialogDto.chatId());
             userRecord.setUserName(dialogDto.name());
             userRepository.save(recordMapper.toEntity(userRecord));
+            return true;
         }
+        return false;
     }
 
     /**
@@ -80,10 +83,11 @@ public class UserService {
     public UserRecord findUserByChatId(Long chatId) {
         logger.info("Вызов метода поиска пользователя по chatId");
         return recordMapper.toRecord(userRepository.findUserEntityByChatId(chatId)
-                .orElseThrow(() -> {
+                        .orElse(null));
+/*                .orElseThrow(() -> {
                     logger.error("Не найден пользователь с id = {}", chatId);
                     return new UserNotFoundException(chatId);
-                }));
+                }));*/
     }
 
     /**

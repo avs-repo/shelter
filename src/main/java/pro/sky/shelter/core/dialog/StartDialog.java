@@ -41,12 +41,10 @@ public class StartDialog implements DialogInterface {
      */
     @Override
     public String getMessage(Long chatId) {
-        UserRecord userRecord = userService.findUserByChatId(chatId);
-        if (userRecord == null) {
-            userService.createUser(dialog);
+        if (userService.createUser(dialog)) {
             return GREETING_MSG;
         } else {
-            return "Здравствуйте " + userRecord.getUserName() + "!\nЧем могу помочь?";
+            return "Здравствуйте " + userService.findUserByChatId(chatId).getUserName() + "!\nЧем могу помочь?";
         }
     }
 

@@ -12,6 +12,7 @@ import pro.sky.shelter.core.entity.UserEntity;
 @Component
 public class RecordMapper {
     public UserRecord toRecord(UserEntity userEntity) {
+        if (userEntity == null) return null;
         UserRecord userRecord = new UserRecord();
         userRecord.setId(userEntity.getId());
         userRecord.setChatId(userEntity.getChatId());
