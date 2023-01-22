@@ -8,8 +8,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import pro.sky.shelter.core.entity.ReportEntity;
-import pro.sky.shelter.core.entity.UserEntity;
 import pro.sky.shelter.core.record.ReportRecord;
 import pro.sky.shelter.core.record.UserRecord;
 import pro.sky.shelter.service.UserService;
@@ -41,7 +39,7 @@ public class UserController {
                             description = "Вывод всех пользователей",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    array = @ArraySchema(schema = @Schema(implementation = UserEntity.class))
+                                    array = @ArraySchema(schema = @Schema(implementation = UserRecord.class))
                             )
                     )
             }
@@ -62,7 +60,7 @@ public class UserController {
                             description = "Поиск пользователя по id",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = UserEntity.class)
+                                    schema = @Schema(implementation = UserRecord.class)
                             )
                     )
             }
@@ -84,7 +82,7 @@ public class UserController {
                             description = "Поиск всех отчетов пользователя",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    array = @ArraySchema(schema = @Schema(implementation = ReportEntity.class))
+                                    array = @ArraySchema(schema = @Schema(implementation = ReportRecord.class))
                             )
                     )
             },
@@ -104,7 +102,7 @@ public class UserController {
                             description = "Привязка животного к пользователю по их id",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = UserEntity.class)
+                                    schema = @Schema(implementation = UserRecord.class)
                             )
                     )
             }
@@ -125,13 +123,13 @@ public class UserController {
                             description = "Удаление пользователя из БД",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = UserEntity.class)
+                                    schema = @Schema(implementation = UserRecord.class)
                             )
                     )
             }
     )
     @DeleteMapping("{id}")
-    public UserEntity deleteUser(@Parameter(description = "Введите id пользователя", example = "1")
+    public UserRecord deleteUser(@Parameter(description = "Введите id пользователя", example = "1")
                                  @PathVariable Long id) {
         return userService.deleteUser(id);
     }
