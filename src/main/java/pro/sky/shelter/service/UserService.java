@@ -136,7 +136,7 @@ public class UserService {
      * @param id - id пользователя
      * @return возвращает удаленного пользователя
      */
-    public UserEntity deleteUser(Long id) {
+    public UserRecord deleteUser(Long id) {
         logger.info("Вызов метода удаления пользователя");
         UserEntity userEntity = userRepository.findById(id)
                 .orElseThrow(() -> {
@@ -144,6 +144,6 @@ public class UserService {
                     return new UserNotFoundException(id);
                 });
         userRepository.delete(userEntity);
-        return userEntity;
+        return recordMapper.toRecord(userEntity);
     }
 }

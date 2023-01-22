@@ -87,7 +87,7 @@ public class AnimalService {
      * @param id - id животного
      * @return возвращает удаленное животное
      */
-    public AnimalEntity deleteAnimal(Long id) {
+    public AnimalRecord deleteAnimal(Long id) {
         logger.info("Вызов метода удаления животного");
         AnimalEntity animalEntity = animalRepository.findById(id)
                 .orElseThrow(() -> {
@@ -95,6 +95,6 @@ public class AnimalService {
                     return new AnimalNotFoundException(id);
                 });
         animalRepository.delete(animalEntity);
-        return animalEntity;
+        return recordMapper.toRecord(animalEntity);
     }
 }

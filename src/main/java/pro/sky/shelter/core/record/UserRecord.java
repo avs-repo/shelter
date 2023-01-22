@@ -11,7 +11,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserRecord {
-
     private Long id;
     private String userName;
     private Long chatId;

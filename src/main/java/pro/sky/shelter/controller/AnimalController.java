@@ -11,7 +11,6 @@ import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pro.sky.shelter.core.entity.AnimalEntity;
 import pro.sky.shelter.core.record.AnimalRecord;
 import pro.sky.shelter.service.AnimalService;
 import pro.sky.shelter.service.ContentSaverService;
@@ -42,7 +41,7 @@ public class AnimalController {
                             description = "Вывод всех животных из БД",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    array = @ArraySchema(schema = @Schema(implementation = AnimalEntity.class))
+                                    array = @ArraySchema(schema = @Schema(implementation = AnimalRecord.class))
                             )
                     )
             }
@@ -60,7 +59,7 @@ public class AnimalController {
                             description = "Поиск животного по его id",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = AnimalEntity.class)
+                                    schema = @Schema(implementation = AnimalRecord.class)
                             )
                     )
             }
@@ -102,7 +101,7 @@ public class AnimalController {
                             description = "Изменение записи животного в БД",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = AnimalEntity.class)
+                                    schema = @Schema(implementation = AnimalRecord.class)
                             )
                     )
             }
@@ -122,7 +121,7 @@ public class AnimalController {
                             description = "Добавление нового животного в БД",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = AnimalEntity.class)
+                                    schema = @Schema(implementation = AnimalRecord.class)
                             )
                     )
             }
@@ -140,13 +139,13 @@ public class AnimalController {
                             description = "Удаление животного из БД",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = AnimalEntity.class)
+                                    schema = @Schema(implementation = AnimalRecord.class)
                             )
                     )
             }
     )
     @DeleteMapping("{id}")
-    public AnimalEntity deleteAnimal(@Parameter(description = "Введите id животного", example = "1")
+    public AnimalRecord deleteAnimal(@Parameter(description = "Введите id животного", example = "1")
                                      @PathVariable Long id) {
         return animalService.deleteAnimal(id);
     }
