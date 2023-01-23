@@ -9,8 +9,10 @@ import com.pengrad.telegrambot.request.SendPhoto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.util.Pair;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import org.springframework.transaction.annotation.Transactional;
 import pro.sky.shelter.core.dialog.DialogInterface;
 import pro.sky.shelter.core.dto.DialogDto;
 import pro.sky.shelter.core.entity.ReportEntity;
@@ -21,6 +23,7 @@ import pro.sky.shelter.core.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -127,24 +130,24 @@ public class BotService {
     /**
      * Отправка сообщения пользователю
      *
-     * @param chatId - чат пользователя
-     * @param message - сообщение для пользователя
+     * @param chatId   - чат пользователя
+     * @param message  - сообщение для пользователя
      * @param keyboard - готовый ReplyKeyboardMarkup для применения
      */
     public void sendResponse(Long chatId, String message, ReplyKeyboardMarkup keyboard) {
         if (message.equals(SHELTER_CONTACTS_MSG)) {
             sendResponse(chatId, contentSaverService.getPhoto(1).getSecond(), null);
         }
-            SendMessage preparedMessage = new SendMessage(chatId, message);
-            if (keyboard != null) preparedMessage.replyMarkup(keyboard);
-            telegramBot.execute(preparedMessage);
+        SendMessage preparedMessage = new SendMessage(chatId, message);
+        if (keyboard != null) preparedMessage.replyMarkup(keyboard);
+        telegramBot.execute(preparedMessage);
     }
 
     /**
      * Отправка фотографии пользователю
      *
-     * @param chatId - чат пользователя
-     * @param photo - фото которое нужно отправить в byte[]
+     * @param chatId   - чат пользователя
+     * @param photo    - фото которое нужно отправить в byte[]
      * @param keyboard - готовый ReplyKeyboardMarkup для применения
      */
     public void sendResponse(Long chatId, byte[] photo, ReplyKeyboardMarkup keyboard) {
@@ -178,6 +181,7 @@ public class BotService {
 
     /**
      * Метод заполнения отчета
+     *
      * @param text текст отчета
      */
     private void parseReport(String text) {
@@ -194,6 +198,7 @@ public class BotService {
 
     /**
      * Метод сохранения отчета
+     *
      * @param chatId - id чата пользователя
      */
     private void saveReport(Long chatId) {
@@ -206,4 +211,23 @@ public class BotService {
         }
         reportHolder = new ReportHolder();
     }
+
+    /**
+     * Метод отправляющий уведомления
+     */
+    @Scheduled(cron = "0 0/1 * * * *")
+    @Transactional(readOnly = true)
+    public void findByDate() {
+        logger.info("Отправили уведомление");
+
+        LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+
+        reportRepository.findAll().stream()
+                .filter(Objects::nonNull)
+                .filter(reportEntity ->ChronoUnit.DAYS.between(reportEntity.getDate(),now)==1)
+                .map(ReportEntity::getUserEntity)
+                .forEach(userEntity -> telegramBot.
+                        execute(new SendMessage(userEntity.getChatId(),"Вы забыли отправили ежедневный отчет!")));
+    }
+
 }

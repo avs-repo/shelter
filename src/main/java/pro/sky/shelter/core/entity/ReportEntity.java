@@ -57,7 +57,7 @@ public class ReportEntity {
     /**
      * Поле для связи с таблицей UserEntity
      */
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 

@@ -1,5 +1,6 @@
 package pro.sky.shelter.core.record;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import lombok.Getter;
@@ -15,6 +16,7 @@ public class UserRecord {
     private String userName;
     private Long chatId;
     private String phone;
+    private LocalDateTime date;
     private AnimalRecord animalRecord;
     private List<ReportRecord> reportRecord;
 }
