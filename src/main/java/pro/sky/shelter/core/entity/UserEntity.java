@@ -3,13 +3,17 @@ package pro.sky.shelter.core.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Setter
 @Getter
+@ToString
+
 @Table(name = "users")
 public class UserEntity {
     /**
@@ -36,6 +40,12 @@ public class UserEntity {
      */
     @Column(name = "phone")
     private String phone;
+
+    /**
+     * Поле хранит дату первого отчета
+     * */
+    @Column(name = "date")
+    private LocalDateTime date;
 
     /**
      * Поле для связи с таблицей AnimalEntity
