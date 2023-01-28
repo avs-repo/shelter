@@ -36,6 +36,10 @@ public class AnimalEntity {
     @Column(name = "animal_name")
     private String animalName;
 
+    @ManyToOne
+    @JoinColumn(name = "volunteer_id")
+    private VolunteerEntity volunteerEntity;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
