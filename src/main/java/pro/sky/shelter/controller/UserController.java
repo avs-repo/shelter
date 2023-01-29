@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import pro.sky.shelter.core.record.ReportRecord;
@@ -95,6 +96,24 @@ public class UserController {
     }
 
     @Operation(
+            summary = "Запись пользователя в БД",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Запись пользователя в БД",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = UserRecord.class)
+                            )
+                    )
+            }
+    )
+    @PostMapping
+    public UserRecord postVolunteer(@RequestBody @Valid UserRecord userRecord) {
+        return userService.createUser(userRecord);
+    }
+
+    @Operation(
             summary = "Привязка животного к пользователю по их id",
             responses = {
                     @ApiResponse(
@@ -114,7 +133,26 @@ public class UserController {
                                       @RequestParam("animalId") Long animalId) {
         return userService.patchUserAnimal(id, animalId);
     }
-
+    @Operation(
+            summary = "Увеличение испытательного срока пользователю",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Увеличение испытательного срока пользователю",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = UserRecord.class)
+                            )
+                    )
+            }
+    )
+    @PatchMapping("{id}/period")
+    public UserRecord extendPeriod(@Parameter(description = "Введите id пользователя", example = "1")
+                                   @PathVariable Long id,
+                                   @Parameter(description = "Введите на сколько дней увеличить испытательный период", example = "14")
+                                   @RequestParam("number") Integer number) {
+        return userService.extendPeriod(id, number);
+    }
     @Operation(
             summary = "Удаление пользователя из БД",
             responses = {
@@ -128,6 +166,7 @@ public class UserController {
                     )
             }
     )
+
     @DeleteMapping("{id}")
     public UserRecord deleteUser(@Parameter(description = "Введите id пользователя", example = "1")
                                  @PathVariable Long id) {

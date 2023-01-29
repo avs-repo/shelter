@@ -8,8 +8,6 @@ CREATE TABLE users
     chat_id   BIGINT,
     phone     TEXT,
     date      TIMESTAMP
-
-
 );
 
 -- changeset andrew:2
@@ -32,11 +30,9 @@ CREATE TABLE animal_photo
 );
 
 -- changeset usov:4
-CREATE TYPE animal_type AS ENUM ('DOG','CAT');
+/*CREATE TYPE animal_type AS ENUM ('DOG','CAT');*/
 
-
-
--- changeset usov:12
+-- changeset usov:5
 CREATE TABLE volunteer
 (
     id        SERIAL PRIMARY KEY,
@@ -45,7 +41,7 @@ CREATE TABLE volunteer
     last_name TEXT
 );
 
--- changeset usov:9
+-- changeset usov:6
 CREATE TABLE animal
 (
     id           SERIAL PRIMARY KEY,
@@ -54,7 +50,7 @@ CREATE TABLE animal
     volunteer_id BIGINT REFERENCES volunteer (id)
 );
 
--- changeset usov:11
+-- changeset usov:7
 CREATE TABLE report
 (
     id              SERIAL PRIMARY KEY,

@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AnimalRecord {
-    private long id;
+    private long animal_id;
     private AnimalType animalType;
     @NotNull(message = "Необходимо имя животного!")
     private String animalName;

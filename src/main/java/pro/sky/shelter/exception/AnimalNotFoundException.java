@@ -1,4 +1,4 @@
-package pro.sky.shelter.core.exception;
+package pro.sky.shelter.exception;
 
 public class AnimalNotFoundException extends RuntimeException{
     private final long id;

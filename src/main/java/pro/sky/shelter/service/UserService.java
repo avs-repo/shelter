@@ -5,8 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import pro.sky.shelter.core.dto.DialogDto;
 import pro.sky.shelter.core.entity.AnimalEntity;
-import pro.sky.shelter.core.exception.AnimalNotFoundException;
-import pro.sky.shelter.core.exception.UserNotFoundException;
+import pro.sky.shelter.exception.AnimalNotFoundException;
+import pro.sky.shelter.exception.DateNotFoundException;
+import pro.sky.shelter.exception.UserNotFoundException;
 import pro.sky.shelter.core.record.RecordMapper;
 import pro.sky.shelter.core.record.ReportRecord;
 import pro.sky.shelter.core.record.UserRecord;
@@ -14,8 +15,8 @@ import pro.sky.shelter.core.entity.UserEntity;
 import pro.sky.shelter.core.repository.AnimalRepository;
 import pro.sky.shelter.core.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -24,6 +25,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final AnimalRepository animalRepository;
     private final RecordMapper recordMapper;
+
     private final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     public UserService(UserRepository userRepository, AnimalRepository animalRepository, RecordMapper recordMapper) {
@@ -45,6 +47,14 @@ public class UserService {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Метод записи пользователя в БД
+     */
+    public UserRecord createUser(UserRecord userRecord) {
+        UserEntity userEntity = recordMapper.toEntity(userRecord);
+        return recordMapper.toRecord(userRepository.save(userEntity));
     }
 
     /**
@@ -149,5 +159,24 @@ public class UserService {
                 });
         userRepository.delete(userEntity);
         return recordMapper.toRecord(userEntity);
+    }
+
+    public UserRecord extendPeriod(Long id, Integer days) {
+        UserEntity user = userRepository.findById(id)
+                .orElseThrow(() -> {
+                    logger.error("Не найден пользователь с id = {}", id);
+                    return new UserNotFoundException(id);
+                });
+        if (user.getDate() == null) {
+            throw new DateNotFoundException(id);
+        }
+        LocalDateTime localDateTime = user.getDate();
+        if (days> 0) {
+            user.setDate(localDateTime.plusDays(days));
+            logger.info("Продление испытательного срока на " + days + " пользователю с id = {}", id);
+        } else {
+            logger.error("Не верно указано количество дней для продления испытательного срока.");
+        }
+        return recordMapper.toRecord(userRepository.save(user));
     }
 }

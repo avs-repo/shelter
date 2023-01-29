@@ -8,7 +8,6 @@ import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SendPhoto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.util.Pair;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +22,6 @@ import pro.sky.shelter.core.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -52,7 +50,7 @@ public class BotService {
     /**
      * RegEx для определения формата и парсинга контактных данных пользователя
      */
-    private final String parsePhone = "(?<phone>[+][7]-\\d{3}-\\d{3}-\\d{2}-\\d{2})(\\s)(?<name>[\\W+]+)";
+    private final String parsePhone = "(?<phone>[+]7-\\d{3}-\\d{3}-\\d{2}-\\d{2})(\\s)(?<name>[\\W+]+)";
     /**
      * RegEx для определения формата и парсинга информации для отчета о животном
      */
@@ -110,10 +108,20 @@ public class BotService {
                     return;
                 }
                 if (incomeMessage.text().matches(parseReport)) {    //Начато получение отчета
-                    logger.info("ChatId={}; Получаем данные отчета", incomeMessage.chat().id());
-                    reportHolder.setUserEntity(userRepository.getUserEntitiesByChatId(incomeMessage.chat().id()));
-                    parseReport(incomeMessage.text());
-                    sendResponse(incomeMessage.chat().id(), "Спасибо, теперь отправьте фото животного.", WELCOME_KEYBOARD);
+                    UserEntity user = userRepository.getUserEntitiesByChatId(incomeMessage.chat().id());
+                    if (user.getAnimalEntity() != null) {
+                        logger.info("ChatId={}; Получаем данные отчета", incomeMessage.chat().id());
+                        if (user.getDate() == null) {
+                            user.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+                            userRepository.save(user);
+                        }
+                        reportHolder.setUserEntity(user);
+                        parseReport(incomeMessage.text());
+                        sendResponse(incomeMessage.chat().id(), "Спасибо, теперь отправьте фото животного.", WELCOME_KEYBOARD);
+                    } else {
+                        logger.info("ChatId={}; К пользователю не привязано животное, не принимаем отчет.", incomeMessage.chat().id());
+                        sendResponse(incomeMessage.chat().id(), "Извините, вы еще не брали питомца из нашего приюта.", WELCOME_KEYBOARD);
+                    }
                     return;
                 }
                 DialogDto dto = new DialogDto(incomeMessage.chat().id(), update.message().from().firstName(), incomeMessage.text());
@@ -160,35 +168,32 @@ public class BotService {
      * Если сообщение в формате запрошенных контактов - тогда берем оттуда информацию.
      * <p>
      * Формат верен? Обновляем Телефон и Имя пользователя в БД.
+     * @param text - текстовая строка для парсинга телефона и имени
+     * @param chatId - ID чата пользователя
      */
     private void parsePhone(String text, Long chatId) {
         Pattern pattern = Pattern.compile(parsePhone);
         Matcher matcher = pattern.matcher(text);
         if (matcher.matches()) {
-            String phone = matcher.group("phone");
-            String name = matcher.group("name");
             UserEntity userEntity = userRepository.getUserEntitiesByChatId(chatId);
-            if (userEntity == null) {
-                userEntity = new UserEntity(chatId, name, phone);
-            } else {
-                userEntity.setUserName(name);
-                userEntity.setPhone(phone);
-            }
+            if (userEntity == null) userEntity = new UserEntity(chatId);
+            userEntity.setUserName(matcher.group("name"));
+            userEntity.setPhone(matcher.group("phone"));
             userRepository.save(userEntity);
-            logger.info("Контакты сохранены.");
+            logger.info("Контакты пользователя сохранены.");
         }
     }
 
     /**
-     * Метод заполнения отчета
+     * Метод получения отчета о животном
      *
-     * @param text текст отчета
+     * @param text - текстовая строка для парсинга отчета
      */
     private void parseReport(String text) {
-        logger.info("Заполнение отчета");
         Pattern pattern = Pattern.compile(parseReport);
         Matcher matcher = pattern.matcher(text);
         if (matcher.matches()) {
+            logger.info("Заполнение данных отчета");
             reportHolder.setDiet(trim(matcher.group("diet")));
             reportHolder.setHealth(trim(matcher.group("health")));
             reportHolder.setBehavior(trim(matcher.group("behavior")));
@@ -218,16 +223,15 @@ public class BotService {
     @Scheduled(cron = "0 0/1 * * * *")
     @Transactional(readOnly = true)
     public void findByDate() {
-        logger.info("Отправили уведомление");
+        logger.debug("Обработка необходимости отправки уведомлений пользователям");
 
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
 
         reportRepository.findAll().stream()
                 .filter(Objects::nonNull)
-                .filter(reportEntity ->ChronoUnit.DAYS.between(reportEntity.getDate(),now)==1)
+                .filter(reportEntity -> ChronoUnit.DAYS.between(reportEntity.getDate(), now) == 1)
                 .map(ReportEntity::getUserEntity)
                 .forEach(userEntity -> telegramBot.
-                        execute(new SendMessage(userEntity.getChatId(),"Вы забыли отправили ежедневный отчет!")));
+                        execute(new SendMessage(userEntity.getChatId(), "Вы забыли отправить ежедневный отчет о питомце!")));
     }
-
 }

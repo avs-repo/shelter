@@ -1,12 +1,13 @@
 package pro.sky.shelter.core.entity;
 
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.Hibernate;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Класс Волонтер, для хранения данных о волонтере
@@ -14,7 +15,6 @@ import java.util.List;
 
 @Getter
 @Setter
-@EqualsAndHashCode
 @ToString
 
 @Table(name = "volunteer")
@@ -42,13 +42,26 @@ public class VolunteerEntity {
     /**
      * фамилия волонтёра
      * */
-    @Column(name = "lastname")
+    @Column(name = "last_name")
     private String lastName;
 
     @OneToMany(mappedBy = "volunteerEntity")
+    @ToString.Exclude
     private List<AnimalEntity> animalEntity;
 
-
     public VolunteerEntity() {
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        VolunteerEntity that = (VolunteerEntity) o;
+        return id != null && Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }
