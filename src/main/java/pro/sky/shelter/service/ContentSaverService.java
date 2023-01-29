@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import pro.sky.shelter.core.entity.AnimalPhotoEntity;
-import pro.sky.shelter.core.exception.PhotoNotFoundException;
+import pro.sky.shelter.exception.PhotoNotFoundException;
 import pro.sky.shelter.core.repository.AnimalPhotoRepository;
 
 import java.io.IOException;

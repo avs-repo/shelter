@@ -19,4 +19,12 @@ public class UserRecord {
     private LocalDateTime date;
     private AnimalRecord animalRecord;
     private List<ReportRecord> reportRecord;
+
+    public AnimalRecord getAnimal() {
+        return animalRecord;
+    }
+
+    public void setAnimal(AnimalRecord animalRecord) {
+        this.animalRecord = animalRecord;
+    }
 }

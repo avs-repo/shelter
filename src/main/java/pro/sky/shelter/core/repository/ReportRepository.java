@@ -12,6 +12,5 @@ import java.util.List;
  */
 @Repository
 public interface ReportRepository extends JpaRepository<ReportEntity, Long> {
-
     List<ReportEntity> findByDate(LocalDateTime localDateTime);
 }

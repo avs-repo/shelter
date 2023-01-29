@@ -13,7 +13,6 @@ import java.util.Objects;
 @Setter
 @Getter
 @ToString
-
 @Table(name = "users")
 public class UserEntity {
     /**
@@ -51,7 +50,7 @@ public class UserEntity {
      * Поле для связи с таблицей AnimalEntity
      */
     @OneToOne
-    @JoinColumn(name = "id")
+    @PrimaryKeyJoinColumn
     private AnimalEntity animalEntity;
 
     /**
@@ -59,6 +58,7 @@ public class UserEntity {
      */
     @OneToMany
     @JoinColumn(name = "id")
+    @ToString.Exclude
     private List<ReportEntity> reportEntity;
 
     public UserEntity() {
@@ -69,6 +69,22 @@ public class UserEntity {
         this.userName = userName;
         this.chatId = chatId;
         this.phone = phone;
+    }
+
+    public UserEntity(Long chatId) {
+        this.chatId = chatId;
+    }
+
+    public AnimalEntity getAnimal() {
+        return animalEntity;
+    }
+
+    public void setAnimal(AnimalEntity animalEntity) {
+        this.animalEntity = animalEntity;
+    }
+
+    public List<ReportEntity> getReportEntity() {
+        return reportEntity;
     }
 
     @Override

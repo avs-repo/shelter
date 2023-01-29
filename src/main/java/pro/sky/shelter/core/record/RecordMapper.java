@@ -18,6 +18,7 @@ public class RecordMapper {
         userRecord.setChatId(userEntity.getChatId());
         userRecord.setUserName(userEntity.getUserName());
         userRecord.setPhone(userEntity.getPhone());
+        userRecord.setDate(userEntity.getDate());
         if (userEntity.getAnimalEntity() != null) {
             userRecord.setAnimalRecord(toRecord(userEntity.getAnimalEntity()));
         }
@@ -26,7 +27,7 @@ public class RecordMapper {
 
     public AnimalRecord toRecord(AnimalEntity animal) {
         AnimalRecord animalRecord = new AnimalRecord();
-        animalRecord.setId(animal.getId());
+        animalRecord.setAnimal_id(animal.getId());
         animalRecord.setAnimalType(animal.getAnimalType());
         animalRecord.setAnimalName(animal.getAnimalName());
 
@@ -66,11 +67,30 @@ public class RecordMapper {
 
     public UserEntity toEntity(UserRecord userRecord) {
         UserEntity userEntity = new UserEntity(userRecord.getChatId(), userRecord.getUserName(), userRecord.getPhone());
+        if (userRecord.getDate() != null) {
+            userEntity.setDate(userRecord.getDate());
+        }
         if (userRecord.getAnimalRecord() != null) {
             AnimalEntity animalEntity = toEntity(userRecord.getAnimalRecord());
-            animalEntity.setId(userRecord.getAnimalRecord().getId());
+            animalEntity.setId(userRecord.getAnimalRecord().getAnimal_id());
             userEntity.setAnimalEntity(animalEntity);
+        } else {
+            userEntity.setAnimalEntity(null);
         }
         return userEntity;
+    }
+
+    public ReportEntity toEntity(ReportRecord reportRecord) {
+        ReportEntity reportEntity = new ReportEntity();
+        reportEntity.setId(reportRecord.getId());
+        reportEntity.setAnimalName(reportRecord.getAnimalName());
+        reportEntity.setDate(reportRecord.getDate());
+        reportEntity.setDiet(reportRecord.getDiet());
+        reportEntity.setHealth(reportRecord.getHealth());
+        reportEntity.setBehavior(reportRecord.getBehavior());
+        if (reportRecord.getUserRecord() != null) {
+            reportEntity.setUserEntity(toEntity(reportRecord.getUserRecord()));
+        }
+        return reportEntity;
     }
 }

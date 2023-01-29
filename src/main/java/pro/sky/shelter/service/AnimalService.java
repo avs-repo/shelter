@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import pro.sky.shelter.core.entity.AnimalEntity;
-import pro.sky.shelter.core.exception.AnimalNotFoundException;
+import pro.sky.shelter.exception.AnimalNotFoundException;
 import pro.sky.shelter.core.record.AnimalRecord;
 import pro.sky.shelter.core.record.RecordMapper;
 import pro.sky.shelter.core.repository.AnimalRepository;
