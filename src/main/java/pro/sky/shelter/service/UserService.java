@@ -1,5 +1,7 @@
 package pro.sky.shelter.service;
 
+import com.pengrad.telegrambot.TelegramBot;
+import com.pengrad.telegrambot.request.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -25,13 +27,15 @@ public class UserService {
     private final UserRepository userRepository;
     private final AnimalRepository animalRepository;
     private final RecordMapper recordMapper;
+    private final TelegramBot telegramBot;
 
     private final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    public UserService(UserRepository userRepository, AnimalRepository animalRepository, RecordMapper recordMapper) {
+    public UserService(UserRepository userRepository, AnimalRepository animalRepository, RecordMapper recordMapper, TelegramBot telegramBot) {
         this.userRepository = userRepository;
         this.animalRepository = animalRepository;
         this.recordMapper = recordMapper;
+        this.telegramBot = telegramBot;
     }
 
     /**
@@ -54,7 +58,8 @@ public class UserService {
      */
     public UserRecord createUser(UserRecord userRecord) {
         UserEntity userEntity = recordMapper.toEntity(userRecord);
-        return recordMapper.toRecord(userRepository.save(userEntity));
+        userRepository.save(userEntity);
+        return recordMapper.toRecord(userEntity);
     }
 
     /**
@@ -94,10 +99,6 @@ public class UserService {
         logger.info("Вызов метода поиска пользователя по chatId");
         return recordMapper.toRecord(userRepository.findUserEntityByChatId(chatId)
                         .orElse(null));
-/*                .orElseThrow(() -> {
-                    logger.error("Не найден пользователь с id = {}", chatId);
-                    return new UserNotFoundException(chatId);
-                }));*/
     }
 
     /**
@@ -178,5 +179,13 @@ public class UserService {
             logger.error("Не верно указано количество дней для продления испытательного срока.");
         }
         return recordMapper.toRecord(userRepository.save(user));
+    }
+
+    public void sendMessage(Long Id, String text) {
+        Optional<UserEntity> user = userRepository.findById(Id);
+        if (user.isPresent()) {
+            SendMessage preparedMessage = new SendMessage(user.get().getChatId(), text);
+            telegramBot.execute(preparedMessage);
+        }
     }
 }

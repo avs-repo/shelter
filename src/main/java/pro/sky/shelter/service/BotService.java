@@ -116,6 +116,7 @@ public class BotService {
                             userRepository.save(user);
                         }
                         reportHolder.setUserEntity(user);
+                        reportHolder.setAnimalName(user.getAnimalEntity().getAnimalName());
                         parseReport(incomeMessage.text());
                         sendResponse(incomeMessage.chat().id(), "Спасибо, теперь отправьте фото животного.", WELCOME_KEYBOARD);
                     } else {
@@ -208,7 +209,8 @@ public class BotService {
      */
     private void saveReport(Long chatId) {
         if (Objects.equals(reportHolder.getUserEntity().getChatId(), chatId)) {
-            ReportEntity report = new ReportEntity(reportHolder.getDiet(), reportHolder.getHealth(),
+            ReportEntity report = new ReportEntity(reportHolder.getAnimalName(),
+                    reportHolder.getDiet(), reportHolder.getHealth(),
                     reportHolder.getBehavior(), reportHolder.getUserEntity(),
                     reportHolder.getDate(), reportHolder.getAnimalPhotoEntity());
             reportRepository.save(report);

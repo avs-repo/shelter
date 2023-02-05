@@ -12,6 +12,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 import pro.sky.shelter.core.entity.ReportEntity;
 import pro.sky.shelter.core.model.AnimalType;
 import pro.sky.shelter.core.record.AnimalRecord;
@@ -22,6 +23,7 @@ import pro.sky.shelter.core.repository.AnimalRepository;
 import pro.sky.shelter.core.repository.ReportRepository;
 import pro.sky.shelter.core.repository.UserRepository;
 import pro.sky.shelter.core.repository.VolunteerRepository;
+import pro.sky.shelter.service.BotService;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -30,6 +32,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UserControllerTest {
 
@@ -47,6 +50,7 @@ public class UserControllerTest {
     private AnimalRepository animalRepository;
     @Autowired
     private RecordMapper recordMapper;
+
     private final Faker faker = new Faker();
 
     @AfterEach
@@ -58,44 +62,14 @@ public class UserControllerTest {
     }
 
     @Test
-    public void createTest() {
+    public void createUserTest() {
         addUser(generateUser());
     }
 
     @Test
-    public void putTest() {
-        UserRecord userRecord = addUser(generateUser());
-        String userName = userRecord.getUserName();
-
-        ResponseEntity<UserRecord> getRecordResponseEntity = testRestTemplate.getForEntity("http://localhost:" + port + "/user/" + userRecord.getId(), UserRecord.class);
-        assertThat(getRecordResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(getRecordResponseEntity.getBody()).isNotNull();
-        assertThat(getRecordResponseEntity.getBody()).usingRecursiveComparison().isEqualTo(userRecord);
-        assertThat(getRecordResponseEntity.getBody().getUserName()).isEqualTo(userName);
-
-        userRecord.setUserName("Gates");
-
-        ResponseEntity<UserRecord> recordResponseEntity = testRestTemplate.exchange(
-                "http://localhost:" + port + "/user/" + userRecord.getId(),
-                HttpMethod.PUT,
-                new HttpEntity<>(userRecord),
-                UserRecord.class
-        );
-
-        assertThat(recordResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(recordResponseEntity.getBody()).isNotNull();
-        assertThat(recordResponseEntity.getBody()).usingRecursiveComparison().isEqualTo(userRecord);
-        assertThat(recordResponseEntity.getBody().getUserName()).isEqualTo("Gates");
-    }
-
-    @Test
     public void findTests() {
-        List<UserRecord> volunteerRecords = Stream.generate(this::generateUser)
+        List<AnimalRecord> animalRecords = Stream.generate(this::generateAnimal)
                 .limit(10)
-                .map(this::addUser)
-                .toList();
-        List<AnimalRecord> animalRecords = Stream.generate(() -> generateAnimal(volunteerRecords.get(faker.random().nextInt(volunteerRecords.size()))))
-                .limit(30)
                 .map(this::addAnimal)
                 .toList();
         List<UserRecord> userRecords = Stream.generate(() -> generateUser(animalRecords.get(faker.random().nextInt(animalRecords.size()))))
@@ -135,24 +109,17 @@ public class UserControllerTest {
     }
 
     @Test
-    public void findUser() {
-        UserRecord volunteerRecord = addUser(generateUser());
-        AnimalRecord animalRecord = addAnimal(generateAnimal(volunteerRecord));
-        UserRecord userRecord = generateUser(animalRecord);
+    public void findUserTest() {
+        AnimalRecord animalRecord = addAnimal(generateAnimal());
+        UserRecord userRecordTest = generateUser(animalRecord);
+        userRecordTest.setAnimalRecord(animalRecord);
 
-        ResponseEntity<UserRecord> getRecordResponseEntity = testRestTemplate.getForEntity("http://localhost:" + port + "/user/" + userRecord.getId(), UserRecord.class);
+        ResponseEntity<UserRecord> getRecordResponseEntity = testRestTemplate.getForEntity("http://localhost:" + port + "/user/" + userRecordTest.getId(), UserRecord.class);
 
         assertThat(getRecordResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(getRecordResponseEntity.getBody()).isNotNull();
-        assertThat(getRecordResponseEntity.getBody()).usingRecursiveComparison().isEqualTo(userRecord);
-        assertThat(getRecordResponseEntity.getBody().getAnimal()).usingRecursiveComparison().isEqualTo(animalRecord);
-
-        ResponseEntity<UserRecord> getByAnimalRecordResponseEntity = testRestTemplate.getForEntity("http://localhost:" + port + "/user/animal/" + animalRecord.getAnimal_id(), UserRecord.class);
-
-        assertThat(getByAnimalRecordResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(getByAnimalRecordResponseEntity.getBody()).isNotNull();
-        assertThat(getByAnimalRecordResponseEntity.getBody()).usingRecursiveComparison().isEqualTo(userRecord);
-        assertThat(getByAnimalRecordResponseEntity.getBody().getAnimal()).usingRecursiveComparison().isEqualTo(animalRecord);
+        assertThat(getRecordResponseEntity.getBody()).usingRecursiveComparison().isEqualTo(userRecordTest);
+        assertThat(getRecordResponseEntity.getBody().getAnimalRecord()).usingRecursiveComparison().isEqualTo(animalRecord);
     }
 
     @Test
@@ -160,7 +127,7 @@ public class UserControllerTest {
         UserRecord userRecord = addUser(generateUser());
 
         ResponseEntity<UserRecord> recordResponseEntity = testRestTemplate.exchange(
-                "http://localhost:" + port + "/volunteer/" + userRecord.getId(),
+                "http://localhost:" + port + "/user/" + userRecord.getId(),
                 HttpMethod.DELETE,
                 new HttpEntity<>(userRecord),
                 UserRecord.class
@@ -173,12 +140,10 @@ public class UserControllerTest {
     }
 
     @Test
-    public void patchUserAnimal() {
-        UserRecord user = addUser(generateUser());
-        AnimalRecord animalRecord = addAnimal(generateAnimal(user));
+    public void patchUserAnimalTest() {
+        AnimalRecord animalRecord = addAnimal(generateAnimal());
         UserRecord userRecord = generateUser(animalRecord);
-        userRecord.setDate(userRecord.getDate().plusMonths(1));
-        userRecord.setAnimal(animalRecord);
+        userRecord.setAnimalRecord(animalRecord);
 
         ResponseEntity<UserRecord> recordResponseEntity = testRestTemplate.exchange(
                 "http://localhost:" + port + "/user/" + userRecord.getId() + "/animal?animalId=" + animalRecord.getAnimal_id(),
@@ -190,13 +155,12 @@ public class UserControllerTest {
         assertThat(recordResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(recordResponseEntity.getBody()).isNotNull();
         assertThat(recordResponseEntity.getBody()).usingRecursiveComparison().isEqualTo(userRecord);
-        assertThat(recordResponseEntity.getBody().getAnimal()).usingRecursiveComparison().isEqualTo(animalRecord);
+        assertThat(recordResponseEntity.getBody().getAnimalRecord()).usingRecursiveComparison().isEqualTo(animalRecord);
     }
 
     @Test
     public void patchExtensionPeriodUserTest() {
-        UserRecord volunteerRecord = addUser(generateUser());
-        AnimalRecord animalRecord = addAnimal(generateAnimal(volunteerRecord));
+        AnimalRecord animalRecord = addAnimal(generateAnimal());
         UserRecord userRecord = generateUser(animalRecord);
         userRecord.setDate(userRecord.getDate().plusDays(14));
 
@@ -210,20 +174,19 @@ public class UserControllerTest {
         assertThat(recordResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(recordResponseEntity.getBody()).isNotNull();
         assertThat(recordResponseEntity.getBody()).usingRecursiveComparison().isEqualTo(userRecord);
-        assertThat(recordResponseEntity.getBody().getAnimal()).usingRecursiveComparison().isEqualTo(animalRecord);
+        assertThat(recordResponseEntity.getBody().getAnimalRecord()).usingRecursiveComparison().isEqualTo(animalRecord);
     }
 
     @Test
     public void sendMessageToUserTest() {
-        UserRecord volunteerRecord = addUser(generateUser());
-        AnimalRecord animalRecord = addAnimal(generateAnimal(volunteerRecord));
+        AnimalRecord animalRecord = addAnimal(generateAnimal());
         UserRecord userRecord = generateUser(animalRecord);
 
-        ResponseEntity<String> getRecordResponseEntity = testRestTemplate.getForEntity("http://localhost:" + port + "/volunteer/user/" + userRecord.getId() + "/decision?number=1", String.class);
+        ResponseEntity<String> getRecordResponseEntity = testRestTemplate.getForEntity("http://localhost:" + port + "/user/" + userRecord.getId() + "/message?text=test", String.class);
 
         assertThat(getRecordResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(getRecordResponseEntity.getBody()).isNotNull();
-        assertThat(getRecordResponseEntity.getBody()).isEqualTo("Сообщение отправлено");
+        assertThat(getRecordResponseEntity.getBody()).isEqualTo("Сообщение пользователю отправлено");
     }
 
     private UserRecord generateUser(AnimalRecord animalRecord) {
@@ -238,7 +201,7 @@ public class UserControllerTest {
         return recordMapper.toRecord(userRepository.save(recordMapper.toEntity(userRecord)));
     }
 
-    private AnimalRecord generateAnimal(UserRecord userRecord) {
+    private AnimalRecord generateAnimal() {
         int number = faker.random().nextInt(1, 2);
         AnimalRecord animalRecord = new AnimalRecord();
         if (number == 1) {
@@ -254,6 +217,7 @@ public class UserControllerTest {
         UserRecord userRecord = new UserRecord();
         userRecord.setUserName(faker.name().firstName());
         userRecord.setPhone(faker.phoneNumber().toString());
+        userRecord.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
         return userRecord;
     }
 
@@ -280,7 +244,10 @@ public class UserControllerTest {
     }
 
     private UserRecord addUser(UserRecord userRecord) {
+        System.out.println(userRecord);
         ResponseEntity<UserRecord> userResponseEntity = testRestTemplate.postForEntity("http://localhost:" + port + "/user", userRecord, UserRecord.class);
+        System.out.println(userResponseEntity);
+
         assertThat(userResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(userResponseEntity.getBody()).isNotNull();
         assertThat(userResponseEntity.getBody()).usingRecursiveComparison().ignoringFields("id").isEqualTo(userRecord);
@@ -288,5 +255,4 @@ public class UserControllerTest {
 
         return userResponseEntity.getBody();
     }
-
 }

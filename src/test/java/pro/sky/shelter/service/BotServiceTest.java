@@ -17,6 +17,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import pro.sky.shelter.core.dialog.DialogInterface;
 import pro.sky.shelter.core.dialog.StartDialog;
 import pro.sky.shelter.core.repository.ReportRepository;
@@ -33,23 +37,29 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.verify;
 import static pro.sky.shelter.configuration.BotConstants.*;
 
-@ExtendWith(MockitoExtension.class)
+@ActiveProfiles("test")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class BotServiceTest {
 
-    @Mock
+    @MockBean
     private TelegramBot telegramBot;
 
-    @Mock
+    @MockBean
     private UserRepository userRepository;
 
-    @Mock
+    @MockBean
     private ContentSaverService photoOfAnimalService;
 
-    @Mock
+    @MockBean
     private ReportRepository reportRepository;
+//    @MockBean
+//    private Map<String, DialogInterface> supportedDialogs;
+@MockBean
+@InjectMocks
+private BotService out;
 
-    @InjectMocks
-    private BotService out;
+//    @InjectMocks
+//    private BotService out;
 
     @Test
    // @MethodSource("paramsForWelcomeMenu")
@@ -78,5 +88,4 @@ class BotServiceTest {
                 Arguments.of(GO_BACK_CMD)
         );
     }
-
 }

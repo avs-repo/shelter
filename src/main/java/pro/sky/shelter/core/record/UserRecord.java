@@ -20,11 +20,11 @@ public class UserRecord {
     private AnimalRecord animalRecord;
     private List<ReportRecord> reportRecord;
 
-    public AnimalRecord getAnimal() {
+    public AnimalRecord getAnimalRecord() {
         return animalRecord;
     }
 
-    public void setAnimal(AnimalRecord animalRecord) {
+    public void setAnimalRecord(AnimalRecord animalRecord) {
         this.animalRecord = animalRecord;
     }
 }
