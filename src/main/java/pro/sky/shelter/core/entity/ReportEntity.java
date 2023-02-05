@@ -57,11 +57,12 @@ public class ReportEntity {
     /**
      * Поле для связи с таблицей UserEntity
      */
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 
-    public ReportEntity(String diet, String health, String behavior, UserEntity userEntity, LocalDateTime date, AnimalPhotoEntity animalPhotoEntity) {
+    public ReportEntity(String animalName, String diet, String health, String behavior, UserEntity userEntity, LocalDateTime date, AnimalPhotoEntity animalPhotoEntity) {
+        this.animalName = animalName;
         this.diet = diet;
         this.health = health;
         this.behavior = behavior;

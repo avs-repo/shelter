@@ -86,13 +86,34 @@ public class UserController {
                                     array = @ArraySchema(schema = @Schema(implementation = ReportRecord.class))
                             )
                     )
-            },
-            tags = "Report"
+            }
     )
     @GetMapping("{id}/reports")
     public Collection<ReportRecord> findReportsByUser(@Parameter(description = "Введите id пользователя", example = "1")
                                                       @PathVariable Long id) {
         return userService.findReportsByUser(id);
+    }
+
+    @Operation(
+            summary = "Отправка сообщений пользователю",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Отправка сообщений пользователю",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = UserRecord.class)
+                            )
+                    )
+            }
+    )
+    @GetMapping("{id}/message")
+    public String sendMessageToUser(@Parameter(description = "Введите id пользователя", example = "1")
+                                    @PathVariable Long id,
+                                    @Parameter(description = "Введите сообщение для пользователя", example = "Вы плохо заполняете отчет.")
+                                    @RequestParam("text") String text) {
+        userService.sendMessage(id, text);
+        return "Сообщение пользователю отправлено";
     }
 
     @Operation(
@@ -109,7 +130,7 @@ public class UserController {
             }
     )
     @PostMapping
-    public UserRecord postVolunteer(@RequestBody @Valid UserRecord userRecord) {
+    public UserRecord postUser(@RequestBody @Valid UserRecord userRecord) {
         return userService.createUser(userRecord);
     }
 
@@ -133,6 +154,7 @@ public class UserController {
                                       @RequestParam("animalId") Long animalId) {
         return userService.patchUserAnimal(id, animalId);
     }
+
     @Operation(
             summary = "Увеличение испытательного срока пользователю",
             responses = {
@@ -153,6 +175,7 @@ public class UserController {
                                    @RequestParam("number") Integer number) {
         return userService.extendPeriod(id, number);
     }
+
     @Operation(
             summary = "Удаление пользователя из БД",
             responses = {

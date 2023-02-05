@@ -50,7 +50,7 @@ public class UserEntity {
      * Поле для связи с таблицей AnimalEntity
      */
     @OneToOne
-    @PrimaryKeyJoinColumn
+    @JoinColumn(name = "id")
     private AnimalEntity animalEntity;
 
     /**
@@ -75,11 +75,11 @@ public class UserEntity {
         this.chatId = chatId;
     }
 
-    public AnimalEntity getAnimal() {
+    public AnimalEntity getAnimalEntity() {
         return animalEntity;
     }
 
-    public void setAnimal(AnimalEntity animalEntity) {
+    public void setAnimalEntity(AnimalEntity animalEntity) {
         this.animalEntity = animalEntity;
     }
 

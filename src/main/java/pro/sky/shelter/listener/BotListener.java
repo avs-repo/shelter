@@ -7,7 +7,6 @@ import com.pengrad.telegrambot.model.Update;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pro.sky.shelter.service.BotService;
 
@@ -22,10 +21,15 @@ import java.util.List;
 public class BotListener implements UpdatesListener {
 
     private final Logger logger = LoggerFactory.getLogger(BotListener.class);
-    @Autowired
-    private TelegramBot telegramBot;
-    @Autowired
-    private BotService botService;
+
+    private final TelegramBot telegramBot;
+
+    private final BotService botService;
+
+    public BotListener(TelegramBot telegramBot, BotService botService) {
+        this.telegramBot = telegramBot;
+        this.botService = botService;
+    }
 
     @PostConstruct
     public void init() {
