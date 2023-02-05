@@ -19,6 +19,7 @@ import pro.sky.shelter.core.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -44,9 +45,7 @@ public class UserService {
     public boolean createUser(DialogDto dialogDto) {
         UserRecord userRecord = findUserByChatId(dialogDto.chatId());
         if (userRecord == null) {
-            userRecord = new UserRecord();
-            userRecord.setChatId(dialogDto.chatId());
-            userRecord.setUserName(dialogDto.name());
+            userRecord = new UserRecord(dialogDto.chatId(), dialogDto.name(),false);
             userRepository.save(recordMapper.toEntity(userRecord));
             return true;
         }
@@ -58,8 +57,7 @@ public class UserService {
      */
     public UserRecord createUser(UserRecord userRecord) {
         UserEntity userEntity = recordMapper.toEntity(userRecord);
-        userRepository.save(userEntity);
-        return recordMapper.toRecord(userEntity);
+        return recordMapper.toRecord(userRepository.save(userEntity));
     }
 
     /**
@@ -67,7 +65,7 @@ public class UserService {
      *
      * @return возвращает List пользователей
      */
-    public Collection<UserRecord> getAllUsers() {
+    public List<UserRecord> getAllUsers() {
         logger.info("Вызов метода получения всех пользователей из БД");
         return userRepository.findAll().stream()
                 .map(recordMapper::toRecord)

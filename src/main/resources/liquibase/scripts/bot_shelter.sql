@@ -1,13 +1,11 @@
 -- liquibase formatted sql
 
--- changeset andrew:1
-CREATE TABLE users
+-- changeset usov:8
+CREATE TABLE animal
 (
-    id        SERIAL PRIMARY KEY,
-    user_name TEXT,
-    chat_id   BIGINT,
-    phone     TEXT,
-    date      TIMESTAMP
+    id           SERIAL PRIMARY KEY,
+    animal_type  SMALLINT,
+    animal_name  TEXT
 );
 
 -- changeset andrew:2
@@ -29,28 +27,19 @@ CREATE TABLE animal_photo
     data       BYTEA
 );
 
--- changeset usov:4
-/*CREATE TYPE animal_type AS ENUM ('DOG','CAT');*/
-
--- changeset usov:5
-CREATE TABLE volunteer
+-- changeset andrew:3
+CREATE TABLE users
 (
-    id        SERIAL PRIMARY KEY,
-    chat_id   BIGINT,
-    name      TEXT,
-    last_name TEXT
+    id          SERIAL PRIMARY KEY,
+    user_name   TEXT,
+    chat_id     BIGINT,
+    phone       TEXT,
+    date        TIMESTAMP,
+    animal_id   BIGINT REFERENCES animal (id),
+    isVolunteer BOOLEAN
 );
 
--- changeset usov:6
-CREATE TABLE animal
-(
-    id           SERIAL PRIMARY KEY,
-    animal_type  SMALLINT,
-    animal_name  TEXT,
-    volunteer_id BIGINT REFERENCES volunteer (id)
-);
-
--- changeset usov:7
+-- changeset usov:9
 CREATE TABLE report
 (
     id              SERIAL PRIMARY KEY,

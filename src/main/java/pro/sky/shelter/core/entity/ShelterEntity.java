@@ -50,4 +50,14 @@ public class ShelterEntity {
     public int hashCode() {
         return Objects.hash(id, name, address, openingHours);
     }
+
+    @Override
+    public String toString() {
+        return "ShelterEntity{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", openingHours='" + openingHours + '\'' +
+                '}';
+    }
 }

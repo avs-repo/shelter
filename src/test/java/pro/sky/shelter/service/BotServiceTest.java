@@ -4,25 +4,13 @@ import com.pengrad.telegrambot.BotUtils;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
-import jakarta.inject.Singleton;
-import org.aspectj.lang.annotation.Before;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import pro.sky.shelter.core.dialog.DialogInterface;
-import pro.sky.shelter.core.dialog.StartDialog;
 import pro.sky.shelter.core.repository.ReportRepository;
 import pro.sky.shelter.core.repository.UserRepository;
 
@@ -52,14 +40,9 @@ class BotServiceTest {
 
     @MockBean
     private ReportRepository reportRepository;
-//    @MockBean
-//    private Map<String, DialogInterface> supportedDialogs;
-@MockBean
-@InjectMocks
-private BotService out;
 
-//    @InjectMocks
-//    private BotService out;
+    @InjectMocks
+    private BotService out;
 
     @Test
    // @MethodSource("paramsForWelcomeMenu")

@@ -13,7 +13,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import pro.sky.shelter.core.entity.ReportEntity;
 import pro.sky.shelter.core.model.AnimalType;
 import pro.sky.shelter.core.record.AnimalRecord;
 import pro.sky.shelter.core.record.RecordMapper;
@@ -22,8 +21,6 @@ import pro.sky.shelter.core.record.UserRecord;
 import pro.sky.shelter.core.repository.AnimalRepository;
 import pro.sky.shelter.core.repository.ReportRepository;
 import pro.sky.shelter.core.repository.UserRepository;
-import pro.sky.shelter.core.repository.VolunteerRepository;
-import pro.sky.shelter.service.BotService;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -45,8 +42,6 @@ public class UserControllerTest {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private VolunteerRepository volunteerRepository;
-    @Autowired
     private AnimalRepository animalRepository;
     @Autowired
     private RecordMapper recordMapper;
@@ -58,7 +53,6 @@ public class UserControllerTest {
         reportRepository.deleteAll();
         userRepository.deleteAll();
         animalRepository.deleteAll();
-        volunteerRepository.deleteAll();
     }
 
     @Test
@@ -86,7 +80,7 @@ public class UserControllerTest {
         ResponseEntity<List<UserRecord>> getAllUsersResponseEntity = testRestTemplate.exchange(
                 "http://localhost:" + port + "/user/",
                 HttpMethod.GET,
-                HttpEntity.EMPTY,
+                null,
                 new ParameterizedTypeReference<>() {
                 });
 
@@ -189,18 +183,6 @@ public class UserControllerTest {
         assertThat(getRecordResponseEntity.getBody()).isEqualTo("Сообщение пользователю отправлено");
     }
 
-    private UserRecord generateUser(AnimalRecord animalRecord) {
-        UserRecord userRecord = new UserRecord();
-        userRecord.setChatId(faker.number().randomNumber());
-        userRecord.setUserName(faker.name().firstName());
-        userRecord.setPhone(faker.phoneNumber().toString());
-        userRecord.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
-        if (animalRecord != null) {
-            userRecord.setAnimalRecord(animalRecord);
-        }
-        return recordMapper.toRecord(userRepository.save(recordMapper.toEntity(userRecord)));
-    }
-
     private AnimalRecord generateAnimal() {
         int number = faker.random().nextInt(1, 2);
         AnimalRecord animalRecord = new AnimalRecord();
@@ -221,6 +203,18 @@ public class UserControllerTest {
         return userRecord;
     }
 
+    private UserRecord generateUser(AnimalRecord animalRecord) {
+        UserRecord userRecord = new UserRecord();
+        userRecord.setChatId(faker.number().randomNumber());
+        userRecord.setUserName(faker.name().firstName());
+        userRecord.setPhone(faker.phoneNumber().toString());
+        userRecord.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+        if (animalRecord != null) {
+            userRecord.setAnimalRecord(animalRecord);
+        }
+        return recordMapper.toRecord(userRepository.save(recordMapper.toEntity(userRecord)));
+    }
+
     private ReportRecord generateReport(UserRecord userRecord) {
         ReportRecord reportRecord = new ReportRecord();
         reportRecord.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
@@ -229,9 +223,9 @@ public class UserControllerTest {
         reportRecord.setBehavior(faker.book().title());
         if (userRecord != null) {
             reportRecord.setUserRecord(userRecord);
+            userRepository.save(recordMapper.toEntity(userRecord));
         }
-        ReportEntity report = recordMapper.toEntity(reportRecord);
-        return recordMapper.toRecord(reportRepository.save(report));
+        return recordMapper.toRecord(reportRepository.save(recordMapper.toEntity(reportRecord)));
     }
 
     private AnimalRecord addAnimal(AnimalRecord animalRecord) {

@@ -57,7 +57,7 @@ public class ReportEntity {
     /**
      * Поле для связи с таблицей UserEntity
      */
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 
@@ -85,5 +85,19 @@ public class ReportEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, date, animalName, diet, health, behavior, animalPhotoEntity, userEntity);
+    }
+
+    @Override
+    public String toString() {
+        return "ReportEntity{" +
+                "id=" + id +
+                ", date=" + date +
+                ", animalName='" + animalName + '\'' +
+                ", diet='" + diet + '\'' +
+                ", health='" + health + '\'' +
+                ", behavior='" + behavior + '\'' +
+                ", animalPhotoEntity=" + animalPhotoEntity +
+                ", userEntity=" + userEntity +
+                '}';
     }
 }
