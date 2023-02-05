@@ -3,7 +3,6 @@ package pro.sky.shelter.core.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,7 +11,6 @@ import java.util.Objects;
 @Entity
 @Setter
 @Getter
-@ToString
 @Table(name = "users")
 public class UserEntity {
     /**
@@ -50,29 +48,30 @@ public class UserEntity {
      * Поле для связи с таблицей AnimalEntity
      */
     @OneToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "animal_id")
     private AnimalEntity animalEntity;
 
     /**
      * Поле для связи с таблицей ReportEntity
      */
-    @OneToMany
-    @JoinColumn(name = "id")
-    @ToString.Exclude
+    @OneToMany(mappedBy = "userEntity")
     private List<ReportEntity> reportEntity;
 
+    @Column(name = "isvolunteer")
+    private Boolean isVolunteer;
+
     public UserEntity() {
-
-    }
-
-    public UserEntity(Long chatId, String userName, String phone) {
-        this.userName = userName;
-        this.chatId = chatId;
-        this.phone = phone;
     }
 
     public UserEntity(Long chatId) {
         this.chatId = chatId;
+    }
+
+    public UserEntity(Long chatId, String userName, String phone, Boolean isVolunteer) {
+        this.userName = userName;
+        this.chatId = chatId;
+        this.phone = phone;
+        this.isVolunteer = isVolunteer;
     }
 
     public AnimalEntity getAnimalEntity() {
@@ -91,11 +90,25 @@ public class UserEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof UserEntity that)) return false;
-        return Objects.equals(id, that.id) && Objects.equals(userName, that.userName) && Objects.equals(chatId, that.chatId) && Objects.equals(phone, that.phone) && Objects.equals(animalEntity, that.animalEntity) && Objects.equals(reportEntity, that.reportEntity);
+        return Objects.equals(id, that.id) && Objects.equals(userName, that.userName) && Objects.equals(chatId, that.chatId) && Objects.equals(phone, that.phone) && Objects.equals(date, that.date) && Objects.equals(animalEntity, that.animalEntity) && Objects.equals(reportEntity, that.reportEntity) && Objects.equals(isVolunteer, that.isVolunteer);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userName, chatId, phone, animalEntity, reportEntity);
+        return Objects.hash(id, userName, chatId, phone, date, animalEntity, reportEntity, isVolunteer);
+    }
+
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "id=" + id +
+                ", userName='" + userName + '\'' +
+                ", chatId=" + chatId +
+                ", phone='" + phone + '\'' +
+                ", date=" + date +
+                ", animalEntity=" + animalEntity +
+                ", reportEntity=" + reportEntity +
+                ", isVolunteer=" + isVolunteer +
+                '}';
     }
 }

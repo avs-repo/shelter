@@ -14,6 +14,7 @@ import pro.sky.shelter.core.record.UserRecord;
 import pro.sky.shelter.service.UserService;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Контроллер - работа с пользователями
@@ -46,7 +47,7 @@ public class UserController {
             }
     )
     @GetMapping
-    public Collection<UserRecord> getAllUsers() {
+    public List<UserRecord> getAllUsers() {
         return userService.getAllUsers();
     }
 

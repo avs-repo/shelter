@@ -19,12 +19,15 @@ public class UserRecord {
     private LocalDateTime date;
     private AnimalRecord animalRecord;
     private List<ReportRecord> reportRecord;
+    private Boolean isVolunteer;
 
-    public AnimalRecord getAnimalRecord() {
-        return animalRecord;
+    public UserRecord() {
+
     }
 
-    public void setAnimalRecord(AnimalRecord animalRecord) {
-        this.animalRecord = animalRecord;
+    public UserRecord(Long chatId, String userName, Boolean isVolunteer) {
+        this.chatId = chatId;
+        this.userName = userName;
+        this.isVolunteer = isVolunteer;
     }
 }

@@ -13,10 +13,8 @@ import pro.sky.shelter.core.entity.UserEntity;
 public class RecordMapper {
     public UserRecord toRecord(UserEntity userEntity) {
         if (userEntity == null) return null;
-        UserRecord userRecord = new UserRecord();
+        UserRecord userRecord = new UserRecord(userEntity.getChatId(), userEntity.getUserName(), userEntity.getIsVolunteer());
         userRecord.setId(userEntity.getId());
-        userRecord.setChatId(userEntity.getChatId());
-        userRecord.setUserName(userEntity.getUserName());
         userRecord.setPhone(userEntity.getPhone());
         userRecord.setDate(userEntity.getDate());
         if (userEntity.getAnimalEntity() != null) {
@@ -66,7 +64,7 @@ public class RecordMapper {
     }
 
     public UserEntity toEntity(UserRecord userRecord) {
-        UserEntity userEntity = new UserEntity(userRecord.getChatId(), userRecord.getUserName(), userRecord.getPhone());
+        UserEntity userEntity = new UserEntity(userRecord.getChatId(), userRecord.getUserName(), userRecord.getPhone(), userRecord.getIsVolunteer());
         if (userRecord.getDate() != null) {
             userEntity.setDate(userRecord.getDate());
         }

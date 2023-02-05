@@ -3,7 +3,6 @@ package pro.sky.shelter.core.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import pro.sky.shelter.core.model.AnimalType;
 
 import java.util.Objects;
@@ -15,7 +14,6 @@ import java.util.Objects;
 @Entity
 @Getter
 @Setter
-@ToString
 @Table(name = "animal")
 public class AnimalEntity {
 
@@ -38,10 +36,6 @@ public class AnimalEntity {
     @Column(name = "animal_name")
     private String animalName;
 
-    @ManyToOne
-    @JoinColumn(name = "volunteer_id")
-    private VolunteerEntity volunteerEntity;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -52,5 +46,14 @@ public class AnimalEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, animalType, animalName);
+    }
+
+    @Override
+    public String toString() {
+        return "AnimalEntity{" +
+                "id=" + id +
+                ", animalType=" + animalType +
+                ", animalName='" + animalName + '\'' +
+                '}';
     }
 }

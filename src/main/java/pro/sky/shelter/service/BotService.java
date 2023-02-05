@@ -177,7 +177,10 @@ public class BotService {
         Matcher matcher = pattern.matcher(text);
         if (matcher.matches()) {
             UserEntity userEntity = userRepository.getUserEntitiesByChatId(chatId);
-            if (userEntity == null) userEntity = new UserEntity(chatId);
+            if (userEntity == null) {
+                userEntity = new UserEntity(chatId);
+                userEntity.setIsVolunteer(false);
+            }
             userEntity.setUserName(matcher.group("name"));
             userEntity.setPhone(matcher.group("phone"));
             userRepository.save(userEntity);

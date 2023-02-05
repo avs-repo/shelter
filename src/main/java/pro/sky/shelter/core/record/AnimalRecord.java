@@ -1,6 +1,5 @@
 package pro.sky.shelter.core.record;
 
-import jakarta.validation.constraints.NotNull;
 import pro.sky.shelter.core.model.AnimalType;
 
 import lombok.Getter;
@@ -14,6 +13,5 @@ import lombok.Setter;
 public class AnimalRecord {
     private long animal_id;
     private AnimalType animalType;
-    @NotNull(message = "Необходимо имя животного!")
     private String animalName;
 }
