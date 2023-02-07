@@ -45,7 +45,7 @@ public class UserService {
     public boolean createUser(DialogDto dialogDto) {
         UserRecord userRecord = findUserByChatId(dialogDto.chatId());
         if (userRecord == null) {
-            userRecord = new UserRecord(dialogDto.chatId(), dialogDto.name(),false);
+            userRecord = new UserRecord(dialogDto.chatId(), dialogDto.name(), false);
             userRepository.save(recordMapper.toEntity(userRecord));
             return true;
         }
@@ -65,7 +65,7 @@ public class UserService {
      *
      * @return возвращает List пользователей
      */
-    public List<UserRecord> getAllUsers() {
+    public Collection<UserRecord> getAllUsers() {
         logger.info("Вызов метода получения всех пользователей из БД");
         return userRepository.findAll().stream()
                 .map(recordMapper::toRecord)
@@ -96,7 +96,7 @@ public class UserService {
     public UserRecord findUserByChatId(Long chatId) {
         logger.info("Вызов метода поиска пользователя по chatId");
         return recordMapper.toRecord(userRepository.findUserEntityByChatId(chatId)
-                        .orElse(null));
+                .orElse(null));
     }
 
     /**
@@ -122,7 +122,7 @@ public class UserService {
     /**
      * Метод добавляет пользователю животное
      *
-     * @param id - id пользователя
+     * @param id       - id пользователя
      * @param animalId - id животного
      * @return возвращает пользователя, который забрал животное из приюта
      */
@@ -170,7 +170,7 @@ public class UserService {
             throw new DateNotFoundException(id);
         }
         LocalDateTime localDateTime = user.getDate();
-        if (days> 0) {
+        if (days > 0) {
             user.setDate(localDateTime.plusDays(days));
             logger.info("Продление испытательного срока на " + days + " пользователю с id = {}", id);
         } else {

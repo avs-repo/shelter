@@ -47,7 +47,7 @@ public class UserController {
             }
     )
     @GetMapping
-    public List<UserRecord> getAllUsers() {
+    public Collection<UserRecord> getAllUsers() {
         return userService.getAllUsers();
     }
 
@@ -68,7 +68,7 @@ public class UserController {
             }
     )
     @GetMapping("/{id}")
-    public UserRecord findUser(@Parameter(description = "Введите id пользователя", example = "1")
+    public UserRecord findUserById(@Parameter(description = "Введите id пользователя", example = "1")
                                @PathVariable Long id) {
         return userService.findUserById(id);
     }
@@ -131,7 +131,7 @@ public class UserController {
             }
     )
     @PostMapping
-    public UserRecord postUser(@RequestBody @Valid UserRecord userRecord) {
+    public UserRecord createUser(@RequestBody @Valid UserRecord userRecord) {
         return userService.createUser(userRecord);
     }
 
