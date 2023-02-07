@@ -1,7 +1,6 @@
 package pro.sky.shelter.controller;
 
 import com.github.javafaker.Faker;
-import com.pengrad.telegrambot.model.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,17 +14,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import pro.sky.shelter.configuration.Generator;
-import pro.sky.shelter.core.model.AnimalType;
 import pro.sky.shelter.core.record.AnimalRecord;
 import pro.sky.shelter.core.record.RecordMapper;
 import pro.sky.shelter.core.record.ReportRecord;
 import pro.sky.shelter.core.record.UserRecord;
+import pro.sky.shelter.core.repository.AnimalPhotoRepository;
 import pro.sky.shelter.core.repository.AnimalRepository;
 import pro.sky.shelter.core.repository.ReportRepository;
 import pro.sky.shelter.core.repository.UserRepository;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -46,6 +44,8 @@ public class UserControllerTest {
     @Autowired
     private AnimalRepository animalRepository;
     @Autowired
+    private AnimalPhotoRepository animalPhotoRepository;
+    @Autowired
     private RecordMapper recordMapper;
 
     private final Faker faker = new Faker();
@@ -56,6 +56,7 @@ public class UserControllerTest {
         reportRepository.deleteAll();
         userRepository.deleteAll();
         animalRepository.deleteAll();
+        animalPhotoRepository.deleteAll();
     }
 
     @Test
@@ -70,14 +71,23 @@ public class UserControllerTest {
                 .map(this::addUser)
                 .toList();
 
+        assertThat(userRecords.size()).isEqualTo(10);
+        assertThat(userRepository.findAll().size()).isEqualTo(20);
+
         UserRecord userRecord = userRecords.get(0);
-        ResponseEntity<List<UserRecord>> recordResponseEntity = testRestTemplate.exchange(
+
+        ResponseEntity<Collection<UserRecord>> recordResponseEntity = testRestTemplate.exchange(
                 "http://localhost:" + port + "/user/",
                 HttpMethod.GET,
-                HttpEntity.EMPTY,
+                null,
                 new ParameterizedTypeReference<>() {
                 }
         );
+        assertThat(recordResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(recordResponseEntity.getBody())
+                .hasSize(userRecords.size())
+                .usingRecursiveFieldByFieldElementComparator()
+                .containsExactlyInAnyOrderElementsOf(userRecords);
     }
 
     @Test
