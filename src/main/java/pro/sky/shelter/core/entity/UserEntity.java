@@ -107,7 +107,7 @@ public class UserEntity {
                 ", phone='" + phone + '\'' +
                 ", date=" + date +
                 ", animalEntity=" + animalEntity +
-                ", reportEntity=" + reportEntity +
+//                ", reportEntity=" + reportEntity +
                 ", isVolunteer=" + isVolunteer +
                 '}';
     }

@@ -1,6 +1,7 @@
 package pro.sky.shelter.controller;
 
 import com.github.javafaker.Faker;
+import com.pengrad.telegrambot.model.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import pro.sky.shelter.configuration.Generator;
 import pro.sky.shelter.core.model.AnimalType;
 import pro.sky.shelter.core.record.AnimalRecord;
 import pro.sky.shelter.core.record.RecordMapper;
@@ -47,6 +49,7 @@ public class UserControllerTest {
     private RecordMapper recordMapper;
 
     private final Faker faker = new Faker();
+    private final Generator generator = new Generator();
 
     @AfterEach
     public void afterEach() {
@@ -57,19 +60,37 @@ public class UserControllerTest {
 
     @Test
     public void createUserTest() {
-        addUser(generateUser());
+        addUser(generator.generateUser());
+    }
+
+    @Test
+    public void getAllUsersTest() {
+        List<UserRecord> userRecords = Stream.generate(generator::generateUser)
+                .limit(10)
+                .map(this::addUser)
+                .toList();
+
+        UserRecord userRecord = userRecords.get(0);
+        ResponseEntity<List<UserRecord>> recordResponseEntity = testRestTemplate.exchange(
+                "http://localhost:" + port + "/user/",
+                HttpMethod.GET,
+                HttpEntity.EMPTY,
+                new ParameterizedTypeReference<>() {
+                }
+        );
     }
 
     @Test
     public void findTests() {
-        List<AnimalRecord> animalRecords = Stream.generate(this::generateAnimal)
+        List<AnimalRecord> animalRecords = Stream.generate(generator::generateAnimal)
                 .limit(10)
                 .map(this::addAnimal)
                 .toList();
-        List<UserRecord> userRecords = Stream.generate(() -> generateUser(animalRecords.get(faker.random().nextInt(animalRecords.size()))))
+        List<UserRecord> userRecords = Stream.generate(() -> generator.generateUser(animalRecords.get(faker.random().nextInt(animalRecords.size()))))
                 .limit(10)
+                .map(this::addUser)
                 .toList();
-        List<ReportRecord> reportRecords = Stream.generate(() -> generateReport(userRecords.get(faker.random().nextInt(userRecords.size()))))
+        List<ReportRecord> reportRecords = Stream.generate(() -> generator.generateReport(userRecords.get(faker.random().nextInt(userRecords.size()))))
                 .limit(50)
                 .toList();
         UserRecord userRecord = userRecords.get(0);
@@ -103,10 +124,9 @@ public class UserControllerTest {
     }
 
     @Test
-    public void findUserTest() {
-        AnimalRecord animalRecord = addAnimal(generateAnimal());
-        UserRecord userRecordTest = generateUser(animalRecord);
-        userRecordTest.setAnimalRecord(animalRecord);
+    public void findUserByIdTest() {
+        AnimalRecord animalRecord = addAnimal(generator.generateAnimal());
+        UserRecord userRecordTest = addUser(generator.generateUser(animalRecord));
 
         ResponseEntity<UserRecord> getRecordResponseEntity = testRestTemplate.getForEntity("http://localhost:" + port + "/user/" + userRecordTest.getId(), UserRecord.class);
 
@@ -118,7 +138,7 @@ public class UserControllerTest {
 
     @Test
     public void deleteTest() {
-        UserRecord userRecord = addUser(generateUser());
+        UserRecord userRecord = addUser(generator.generateUser());
 
         ResponseEntity<UserRecord> recordResponseEntity = testRestTemplate.exchange(
                 "http://localhost:" + port + "/user/" + userRecord.getId(),
@@ -135,9 +155,8 @@ public class UserControllerTest {
 
     @Test
     public void patchUserAnimalTest() {
-        AnimalRecord animalRecord = addAnimal(generateAnimal());
-        UserRecord userRecord = generateUser(animalRecord);
-        userRecord.setAnimalRecord(animalRecord);
+        AnimalRecord animalRecord = addAnimal(generator.generateAnimal());
+        UserRecord userRecord = addUser(generator.generateUser(animalRecord));
 
         ResponseEntity<UserRecord> recordResponseEntity = testRestTemplate.exchange(
                 "http://localhost:" + port + "/user/" + userRecord.getId() + "/animal?animalId=" + animalRecord.getAnimal_id(),
@@ -153,9 +172,9 @@ public class UserControllerTest {
     }
 
     @Test
-    public void patchExtensionPeriodUserTest() {
-        AnimalRecord animalRecord = addAnimal(generateAnimal());
-        UserRecord userRecord = generateUser(animalRecord);
+    public void extendPeriodTest() {
+        AnimalRecord animalRecord = addAnimal(generator.generateAnimal());
+        UserRecord userRecord = addUser(generator.generateUser(animalRecord));
         userRecord.setDate(userRecord.getDate().plusDays(14));
 
         ResponseEntity<UserRecord> recordResponseEntity = testRestTemplate.exchange(
@@ -173,8 +192,8 @@ public class UserControllerTest {
 
     @Test
     public void sendMessageToUserTest() {
-        AnimalRecord animalRecord = addAnimal(generateAnimal());
-        UserRecord userRecord = generateUser(animalRecord);
+        AnimalRecord animalRecord = addAnimal(generator.generateAnimal());
+        UserRecord userRecord = addUser(generator.generateUser(animalRecord));
 
         ResponseEntity<String> getRecordResponseEntity = testRestTemplate.getForEntity("http://localhost:" + port + "/user/" + userRecord.getId() + "/message?text=test", String.class);
 
@@ -183,70 +202,25 @@ public class UserControllerTest {
         assertThat(getRecordResponseEntity.getBody()).isEqualTo("Сообщение пользователю отправлено");
     }
 
-    private AnimalRecord generateAnimal() {
-        int number = faker.random().nextInt(1, 2);
-        AnimalRecord animalRecord = new AnimalRecord();
-        if (number == 1) {
-            animalRecord.setAnimalType(AnimalType.CAT);
-        } else {
-            animalRecord.setAnimalType(AnimalType.DOG);
-        }
-        animalRecord.setAnimalName(faker.animal().name());
-        return animalRecord;
-    }
-
-    private UserRecord generateUser() {
-        UserRecord userRecord = new UserRecord();
-        userRecord.setUserName(faker.name().firstName());
-        userRecord.setPhone(faker.phoneNumber().toString());
-        userRecord.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
-        return userRecord;
-    }
-
-    private UserRecord generateUser(AnimalRecord animalRecord) {
-        UserRecord userRecord = new UserRecord();
-        userRecord.setChatId(faker.number().randomNumber());
-        userRecord.setUserName(faker.name().firstName());
-        userRecord.setPhone(faker.phoneNumber().toString());
-        userRecord.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
-        if (animalRecord != null) {
-            userRecord.setAnimalRecord(animalRecord);
-        }
-        return recordMapper.toRecord(userRepository.save(recordMapper.toEntity(userRecord)));
-    }
-
-    private ReportRecord generateReport(UserRecord userRecord) {
-        ReportRecord reportRecord = new ReportRecord();
-        reportRecord.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
-        reportRecord.setDiet(faker.book().title());
-        reportRecord.setHealth(faker.book().title());
-        reportRecord.setBehavior(faker.book().title());
-        if (userRecord != null) {
-            reportRecord.setUserRecord(userRecord);
-            userRepository.save(recordMapper.toEntity(userRecord));
-        }
-        return recordMapper.toRecord(reportRepository.save(recordMapper.toEntity(reportRecord)));
-    }
-
     private AnimalRecord addAnimal(AnimalRecord animalRecord) {
         ResponseEntity<AnimalRecord> animalResponseEntity = testRestTemplate.postForEntity("http://localhost:" + port + "/animal", animalRecord, AnimalRecord.class);
         assertThat(animalResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(animalResponseEntity.getBody()).isNotNull();
         assertThat(animalResponseEntity.getBody()).usingRecursiveComparison().ignoringFields("animal_id").isEqualTo(animalRecord);
 
+        animalRepository.save(recordMapper.toEntity(animalRecord));
         return animalResponseEntity.getBody();
     }
 
     private UserRecord addUser(UserRecord userRecord) {
-        System.out.println(userRecord);
         ResponseEntity<UserRecord> userResponseEntity = testRestTemplate.postForEntity("http://localhost:" + port + "/user", userRecord, UserRecord.class);
-        System.out.println(userResponseEntity);
 
         assertThat(userResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(userResponseEntity.getBody()).isNotNull();
         assertThat(userResponseEntity.getBody()).usingRecursiveComparison().ignoringFields("id").isEqualTo(userRecord);
         assertThat(userResponseEntity.getBody().getId()).isNotNull();
 
+        userRepository.save(recordMapper.toEntity(userRecord));
         return userResponseEntity.getBody();
     }
 }

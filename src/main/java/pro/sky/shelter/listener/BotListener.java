@@ -19,12 +19,11 @@ import java.util.List;
  */
 @Service
 public class BotListener implements UpdatesListener {
-
-    private final Logger logger = LoggerFactory.getLogger(BotListener.class);
-
     private final TelegramBot telegramBot;
 
     private final BotService botService;
+
+    private final Logger logger = LoggerFactory.getLogger(BotListener.class);
 
     public BotListener(TelegramBot telegramBot, BotService botService) {
         this.telegramBot = telegramBot;
@@ -46,7 +45,7 @@ public class BotListener implements UpdatesListener {
     public int process(List<Update> updates) {
         try {
             updates.forEach(update -> {
-                logger.info("Update: {}", "name:" + update.message().from().firstName() + " id:" + update.message().from().id() + " msg:" + update.message().from().toString());
+                logger.info("Processing update: {}", update);
                 botService.process(update);
             });
         } catch (RuntimeException e) {
@@ -54,5 +53,4 @@ public class BotListener implements UpdatesListener {
         }
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
-
 }
