@@ -20,6 +20,7 @@ public class UserRecord {
     private AnimalRecord animalRecord;
     private List<ReportRecord> reportRecord;
     private Boolean isVolunteer;
+    private Long volunteerChatId;
 
     public UserRecord() {
 

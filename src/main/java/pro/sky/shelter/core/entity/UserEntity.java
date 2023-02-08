@@ -60,6 +60,9 @@ public class UserEntity {
     @Column(name = "isvolunteer")
     private Boolean isVolunteer;
 
+    @Column(name = "volunteer_chat_id")
+    private Long volunteerChatId;
+
     public UserEntity() {
     }
 

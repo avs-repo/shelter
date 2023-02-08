@@ -27,7 +27,7 @@ CREATE TABLE animal_photo
     data       BYTEA
 );
 
--- changeset andrew:3
+-- changeset andrew:4
 CREATE TABLE users
 (
     id          SERIAL PRIMARY KEY,
@@ -36,10 +36,11 @@ CREATE TABLE users
     phone       TEXT,
     date        TIMESTAMP,
     animal_id   BIGINT REFERENCES animal (id),
-    isVolunteer BOOLEAN
+    isVolunteer BOOLEAN,
+    volunteer_chat_id BIGINT
 );
 
--- changeset usov:9
+-- changeset usov:10
 CREATE TABLE report
 (
     id              SERIAL PRIMARY KEY,

@@ -56,6 +56,10 @@ public class BotService {
      */
     private final String parseReport = "1[)](?<diet>[\\W+]+)2[)](?<health>[\\W+]+)3[)](?<behavior>[\\W+]+)";
     /**
+     * RegEx для парсинга строки ответа на сообщение пользователю через чат бота
+     */
+    private final String parseResponse = "(([\\d+]+)\\s([\\W+]+))";
+    /**
      * Хранение отсылаемых пользователем на отчет данных
      */
     private ReportHolder reportHolder = new ReportHolder();
@@ -124,6 +128,19 @@ public class BotService {
                         sendResponse(incomeMessage.chat().id(), "Извините, вы еще не брали питомца из нашего приюта.", WELCOME_KEYBOARD);
                     }
                     return;
+                } else if (!Objects.equals(incomeMessage.text(), VOLUNTEER_CHAT_CLOSE)) {  //проверка на чат с волонтером
+                    UserEntity user = userRepository.getUserEntitiesByChatId(incomeMessage.chat().id());
+                    if (user != null && user.getVolunteerChatId() != null) {
+                        logger.info("ChatId={}; Пользователь отправляет сообщение волонтеру: {}", incomeMessage.chat().id(), incomeMessage.text());
+                        sendResponse(user.getVolunteerChatId(), incomeMessage.chat().id() + ": " + incomeMessage.text(), WELCOME_KEYBOARD);
+                        sendResponse(incomeMessage.chat().id(), "Ваше сообщение отправлено волонтеру, ожидайте ответа.", CHAT_KEYBOARD);
+                        return;
+                    }
+                    if (user != null && user.getIsVolunteer() && incomeMessage.text().matches(parseResponse)) {
+                        logger.info("ChatId={}; Волонтер отправляет сообщение пользователю: {}", incomeMessage.chat().id(), incomeMessage.text());
+                        messageToTheUser(incomeMessage.text());
+                        return;
+                    }
                 }
                 DialogDto dto = new DialogDto(incomeMessage.chat().id(), update.message().from().firstName(), incomeMessage.text());
                 if (dialog.isSupport(dto) && dialog.process(dto)) {
@@ -169,7 +186,8 @@ public class BotService {
      * Если сообщение в формате запрошенных контактов - тогда берем оттуда информацию.
      * <p>
      * Формат верен? Обновляем Телефон и Имя пользователя в БД.
-     * @param text - текстовая строка для парсинга телефона и имени
+     *
+     * @param text   - текстовая строка для парсинга телефона и имени
      * @param chatId - ID чата пользователя
      */
     private void parsePhone(String text, Long chatId) {
@@ -220,6 +238,21 @@ public class BotService {
             logger.info("Сохранили отчет.");
         }
         reportHolder = new ReportHolder();
+    }
+
+    /**
+     * Метод отправки сообщения пользователю
+     *
+     * @param text ответ волонтера
+     */
+    public void messageToTheUser(String text) {
+        Pattern pattern = Pattern.compile(parseResponse);
+        Matcher matcher = pattern.matcher(text);
+        if (matcher.matches()) {
+            long id = Long.parseLong(matcher.group(2));
+            String answer = matcher.group(3);
+            sendResponse(id, "Ответ волонтера: " + answer, CHAT_KEYBOARD);
+        }
     }
 
     /**

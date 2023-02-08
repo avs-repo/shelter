@@ -16,6 +16,7 @@ import pro.sky.shelter.core.record.UserRecord;
 import pro.sky.shelter.core.entity.UserEntity;
 import pro.sky.shelter.core.repository.AnimalRepository;
 import pro.sky.shelter.core.repository.UserRepository;
+import pro.sky.shelter.exception.VolunteerNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -160,6 +161,12 @@ public class UserService {
         return recordMapper.toRecord(userEntity);
     }
 
+    /**
+     * Метод увеличения испытательного срока пользователю
+     *
+     * @param id - id пользователя
+     * @return возвращает пользователя, с продленным испытательным сроком
+     */
     public UserRecord extendPeriod(Long id, Integer days) {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> {
@@ -185,5 +192,32 @@ public class UserService {
             SendMessage preparedMessage = new SendMessage(user.get().getChatId(), text);
             telegramBot.execute(preparedMessage);
         }
+    }
+
+
+    /**
+     * Метод начинает чат пользователя с волонтером
+     *
+     * @param userChatId - chatId вызывающего пользователя
+     */
+    public void openChat(Long userChatId) {
+        Long volunteerChatId = findVolunteerChatId(userChatId);
+        UserEntity userEntity = userRepository.getUserEntitiesByChatId(userChatId);
+        userEntity.setVolunteerChatId(volunteerChatId);
+        userRepository.save(userEntity);
+    }
+
+    public Long findVolunteerChatId(Long userChatId) {
+        List<UserEntity> volunteers = userRepository.findUserEntitiesByIsVolunteer(true);
+        if (volunteers.size() == 0) {
+            throw new VolunteerNotFoundException(userChatId);
+        }
+        return volunteers.get((int) (Math.random() * volunteers.size())).getChatId();
+    }
+
+    public void closeChat(Long userChatId) {
+        UserEntity userEntity = userRepository.getUserEntitiesByChatId(userChatId);
+        userEntity.setVolunteerChatId(null);
+        userRepository.save(userEntity);
     }
 }
