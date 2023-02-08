@@ -18,6 +18,7 @@ public class Generator {
         userRecord.setUserName(faker.name().firstName());
         userRecord.setPhone(faker.phoneNumber().toString());
         userRecord.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+        userRecord.setIsVolunteer(false);
         return userRecord;
     }
 
@@ -27,6 +28,7 @@ public class Generator {
         userRecord.setUserName(faker.name().firstName());
         userRecord.setPhone(faker.phoneNumber().toString());
         userRecord.setDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+        userRecord.setIsVolunteer(false);
         if (animalRecord != null) {
             userRecord.setAnimalRecord(animalRecord);
         }
