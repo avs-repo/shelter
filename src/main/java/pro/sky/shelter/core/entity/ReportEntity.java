@@ -57,7 +57,7 @@ public class ReportEntity {
     /**
      * Поле для связи с таблицей UserEntity
      */
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 

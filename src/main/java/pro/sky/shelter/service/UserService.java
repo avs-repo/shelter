@@ -186,6 +186,12 @@ public class UserService {
         return recordMapper.toRecord(userRepository.save(user));
     }
 
+    /**
+     * Метод отправки сообщения пользователю по Id
+     *
+     * @param Id - Id пользователя
+     * @param text - сообщение пользователю
+     */
     public void sendMessage(Long Id, String text) {
         Optional<UserEntity> user = userRepository.findById(Id);
         if (user.isPresent()) {
@@ -207,6 +213,12 @@ public class UserService {
         userRepository.save(userEntity);
     }
 
+    /**
+     * Метод ищет волонтера
+     *
+     * @param userChatId - chatId вызывающего пользователя
+     * @return Volunteer chatId
+     */
     public Long findVolunteerChatId(Long userChatId) {
         List<UserEntity> volunteers = userRepository.findUserEntitiesByIsVolunteer(true);
         if (volunteers.size() == 0) {
@@ -215,6 +227,11 @@ public class UserService {
         return volunteers.get((int) (Math.random() * volunteers.size())).getChatId();
     }
 
+    /**
+     * Метод заканчивает чат пользователя с волонтером
+     *
+     * @param userChatId - chatId вызывающего пользователя
+     */
     public void closeChat(Long userChatId) {
         UserEntity userEntity = userRepository.getUserEntitiesByChatId(userChatId);
         userEntity.setVolunteerChatId(null);
