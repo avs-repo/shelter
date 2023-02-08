@@ -113,7 +113,7 @@ public class UserController {
                                     @PathVariable Long id,
                                     @Parameter(description = "Введите сообщение для пользователя", example = "Вы плохо заполняете отчет.")
                                     @RequestParam("text") String text) {
-        userService.sendMessage(id, text);
+        userService.sendMessage(id, "Сообщение от волонтера: " + text);
         return "Сообщение пользователю отправлено";
     }
 

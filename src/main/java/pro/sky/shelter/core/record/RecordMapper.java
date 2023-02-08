@@ -20,6 +20,9 @@ public class RecordMapper {
         if (userEntity.getAnimalEntity() != null) {
             userRecord.setAnimalRecord(toRecord(userEntity.getAnimalEntity()));
         }
+        if (userEntity.getVolunteerChatId() != null) {
+            userRecord.setVolunteerChatId(userEntity.getVolunteerChatId());
+        }
         return userRecord;
     }
 
@@ -74,6 +77,9 @@ public class RecordMapper {
             userEntity.setAnimalEntity(animalEntity);
         } else {
             userEntity.setAnimalEntity(null);
+        }
+        if (userRecord.getVolunteerChatId() != null) {
+            userEntity.setVolunteerChatId(userRecord.getVolunteerChatId());
         }
         return userEntity;
     }

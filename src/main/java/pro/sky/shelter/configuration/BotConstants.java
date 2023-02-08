@@ -17,6 +17,7 @@ public class BotConstants {
     public static final String SHELTER_INFO_CMD = "Информация о приюте";
     public static final String SHELTER_CONTACTS_CMD = "Контакты приюта";
     public static final String VOLUNTEER_CMD = "Позвать волонтера";
+    public static final String VOLUNTEER_CHAT_CLOSE = "Закрыть чат";
     public static final String MEET_DOG_RULES_CMD = "Правила знакомства с собакой";
     public static final String DOCUMENT_LIST_CMD = "Необходимые документы";
     public static final String TRANSPORTATION_CMD = "Как перевозить";
@@ -89,11 +90,15 @@ public class BotConstants {
             - трогать миски животных
             - залезать в будки""";
     public static final String USER_CONTACTS_MSG = "Введите Ваши телефон и имя в формате \"+7-999-123-45-67 Имя\".";
-    public static final String VOLUNTEER_MSG = "Ожидайте, с Вами свяжется первый освободившийся волонтер";
+    public static final String VOLUNTEER_MSG = """
+            Чат с волонтером начат.
+            Можете написать ваши вопросы.""";
+    public static final String CLOSE_CHAT_MSG = "Чат с волонтером закончен.";
     public static final String WARNING_MSG = """
             Дорогой усыновитель, мы заметили, что ты заполняешь отчет не так подробно, как необходимо. 
             Пожалуйста, подойди ответственнее к этому занятию. 
             В противном случае волонтеры приюта будут обязаны самолично проверять условия содержания собаки""";
+
 
     public static final ReplyKeyboardMarkup WELCOME_KEYBOARD = new ReplyKeyboardMarkup(
             new String[]{SHELTER_INFO_CMD, DOGS_CMD},
@@ -110,4 +115,6 @@ public class BotConstants {
             new String[]{DECLINE_REASONS_CMD, USER_CONTACTS_CMD},
             new String[]{VOLUNTEER_CMD, GO_BACK_CMD});
 
+    public static final ReplyKeyboardMarkup CHAT_KEYBOARD = new ReplyKeyboardMarkup(
+            VOLUNTEER_CHAT_CLOSE);
 }
