@@ -9,5 +9,4 @@ class ShelterApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }
