@@ -34,4 +34,4 @@ build/
 /mvnw
 /mvnw.cmd
 /.jpb/
-/src/main/resources/application.properties
+/src/main/java/application.properties
