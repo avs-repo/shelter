@@ -1,0 +1,21 @@
+{
+  "message": {
+    "chat": {
+      "id": 777
+    },
+    "photo":[
+      {
+        "file_id":"%command%",
+        "file_size":1234,
+        "width":600,
+        "height":600
+      },
+      {
+        "file_id":"FasdfFhfsdlkfhgAAFafh",
+        "file_size":12345,
+        "width":800,
+        "height":800
+      }
+    ]
+  }
+}
